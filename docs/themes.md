@@ -4,14 +4,14 @@
 
 ## 预设一览
 
-| 预设 | 灵感来源 | 字体 (标题/正文/代码) | 强调色 | 一句话气质 |
-|---|---|---|---|---|
-| `current` | 杂志编辑风（默认） | Sora / Manrope / Space Mono | 红 `#e84a5f` + 橙 | 大胆撞色、强设计感 |
-| `minimal` | Stripe / Vercel / Linear 文档 | Inter / Inter / JetBrains Mono | 靛蓝 `#4f46e5` | 白底发丝线，克制精准 |
-| `notion` | Notion 公开页面 | Inter / Inter / JetBrains Mono | Notion 蓝 `#337ea9` | 暖灰工作区+白色文档面 |
-| `things` | Things 3 (Obsidian 热门主题) | Plus Jakarta Sans / Inter / JetBrains Mono | iOS 蓝 `#2e80f2` | 零边框软填充，圆环 checkbox |
-| `anuppuccin` | AnuPpuccin / Catppuccin | Nunito / Nunito Sans / Fira Code | 木槿紫 `#8839ef` | 粉彩色阶，h1–h6 各有彩色 |
-| `bluetopaz` | Blue Topaz (中文社区热门) | Noto Serif SC / Noto Sans SC / JetBrains Mono | 黄玉蓝 `#2f6fa7` + 朱砂 | 纸墨书卷气，三线表、章节号 |
+| 预设         | 灵感来源                      | 字体 (标题/正文/代码)                         | 强调色                  | 一句话气质                  |
+| ------------ | ----------------------------- | --------------------------------------------- | ----------------------- | --------------------------- |
+| `current`    | 杂志编辑风（默认）            | Sora / Manrope / Space Mono                   | 红 `#e84a5f` + 橙       | 大胆撞色、强设计感          |
+| `minimal`    | Stripe / Vercel / Linear 文档 | Inter / Inter / JetBrains Mono                | 靛蓝 `#4f46e5`          | 白底发丝线，克制精准        |
+| `notion`     | Notion 公开页面               | Inter / Inter / JetBrains Mono                | Notion 蓝 `#337ea9`     | 暖灰工作区+白色文档面       |
+| `things`     | Things 3 (Obsidian 热门主题)  | Plus Jakarta Sans / Inter / JetBrains Mono    | iOS 蓝 `#2e80f2`        | 零边框软填充，圆环 checkbox |
+| `anuppuccin` | AnuPpuccin / Catppuccin       | Nunito / Nunito Sans / Fira Code              | 木槿紫 `#8839ef`        | 粉彩色阶，h1–h6 各有彩色    |
+| `bluetopaz`  | Blue Topaz (中文社区热门)     | Noto Serif SC / Noto Sans SC / JetBrains Mono | 黄玉蓝 `#2f6fa7` + 朱砂 | 纸墨书卷气，三线表、章节号  |
 
 ## 切换主题
 
