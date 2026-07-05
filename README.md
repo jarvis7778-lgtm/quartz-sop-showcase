@@ -70,7 +70,7 @@ npm run dev
 
 ## Themes
 
-Six complete visual presets ship with the template — `current` (default), `minimal` (Stripe/Vercel docs), `notion` (Notion workspace), `things` (Things 3), `anuppuccin` (Catppuccin pastels), and `bluetopaz` (scholarly paper-and-ink, CJK-friendly serif). Switch with one line in `site.theme.ts`:
+Five complete visual presets ship with the template — `current` (default), `notion` (Notion workspace), `things` (Things 3), `anuppuccin` (Catppuccin pastels), and `bluetopaz` (scholarly paper-and-ink, CJK-friendly serif). Switch with one line in `site.theme.ts`:
 
 ```ts
 export const siteTheme = {

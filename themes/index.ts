@@ -1,12 +1,6 @@
 import { Theme } from "../quartz/util/theme"
 
-export type ThemePresetName =
-  | "current"
-  | "minimal"
-  | "notion"
-  | "things"
-  | "anuppuccin"
-  | "bluetopaz"
+export type ThemePresetName = "current" | "notion" | "things" | "anuppuccin" | "bluetopaz"
 
 const current: Theme = {
   fontOrigin: "googleFonts",
@@ -38,43 +32,6 @@ const current: Theme = {
       tertiary: "#ffa15c",
       highlight: "rgba(255,107,129,0.1)",
       textHighlight: "#ff8c4244",
-    },
-  },
-}
-
-// minimal — Stripe / Vercel / Linear docs.
-// True-white canvas, cool slate neutrals, one restrained indigo accent.
-// Hierarchy from type weight and 1px hairlines — never color or shadow.
-const minimal: Theme = {
-  fontOrigin: "googleFonts",
-  cdnCaching: true,
-  typography: {
-    header: "Inter",
-    body: "Inter",
-    code: "JetBrains Mono",
-  },
-  colors: {
-    lightMode: {
-      light: "#ffffff",
-      lightgray: "#e8eaed",
-      gray: "#8b909a",
-      darkgray: "#4a5160",
-      dark: "#1c2024",
-      secondary: "#4f46e5",
-      tertiary: "#6366f1",
-      highlight: "rgba(79, 70, 229, 0.06)",
-      textHighlight: "#c7d2fe88",
-    },
-    darkMode: {
-      light: "#0c0d10",
-      lightgray: "#23262d",
-      gray: "#6b7280",
-      darkgray: "#c2c8d2",
-      dark: "#f4f6f8",
-      secondary: "#818cf8",
-      tertiary: "#a5b4fc",
-      highlight: "rgba(129, 140, 248, 0.1)",
-      textHighlight: "#4f46e555",
     },
   },
 }
@@ -229,7 +186,6 @@ const bluetopaz: Theme = {
 
 const presets: Record<ThemePresetName, Theme> = {
   current,
-  minimal,
   notion,
   things,
   anuppuccin,

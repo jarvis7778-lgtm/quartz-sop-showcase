@@ -1,17 +1,16 @@
 # 主题预设 (Theme Presets)
 
-模板内置 6 套完整外观。每套 = 调色板/字体（`themes/index.ts`）+ 结构样式（`quartz/styles/custom.scss` 中 `body[data-theme-preset="..."]` 作用域块），覆盖首页、SOP 库页、文章排版，均含亮/暗双模式。
+模板内置 5 套完整外观。每套 = 调色板/字体（`themes/index.ts`）+ 结构样式（`quartz/styles/custom.scss` 中 `body[data-theme-preset="..."]` 作用域块），覆盖首页、SOP 库页、文章排版，均含亮/暗双模式。
 
 ## 预设一览
 
-| 预设         | 灵感来源                      | 字体 (标题/正文/代码)                         | 强调色                  | 一句话气质                  |
-| ------------ | ----------------------------- | --------------------------------------------- | ----------------------- | --------------------------- |
-| `current`    | 杂志编辑风（默认）            | Sora / Manrope / Space Mono                   | 红 `#e84a5f` + 橙       | 大胆撞色、强设计感          |
-| `minimal`    | Stripe / Vercel / Linear 文档 | Inter / Inter / JetBrains Mono                | 靛蓝 `#4f46e5`          | 白底发丝线，克制精准        |
-| `notion`     | Notion 公开页面               | Inter / Inter / JetBrains Mono                | Notion 蓝 `#337ea9`     | 暖灰工作区+白色文档面       |
-| `things`     | Things 3 (Obsidian 热门主题)  | Plus Jakarta Sans / Inter / JetBrains Mono    | iOS 蓝 `#2e80f2`        | 零边框软填充，圆环 checkbox |
-| `anuppuccin` | AnuPpuccin / Catppuccin       | Nunito / Nunito Sans / Fira Code              | 木槿紫 `#8839ef`        | 粉彩色阶，h1–h6 各有彩色    |
-| `bluetopaz`  | Blue Topaz (中文社区热门)     | Noto Serif SC / Noto Sans SC / JetBrains Mono | 黄玉蓝 `#2f6fa7` + 朱砂 | 纸墨书卷气，三线表、章节号  |
+| 预设         | 灵感来源                     | 字体 (标题/正文/代码)                         | 强调色                  | 一句话气质                  |
+| ------------ | ---------------------------- | --------------------------------------------- | ----------------------- | --------------------------- |
+| `current`    | 杂志编辑风（默认）           | Sora / Manrope / Space Mono                   | 红 `#e84a5f` + 橙       | 大胆撞色、强设计感          |
+| `notion`     | Notion 公开页面              | Inter / Inter / JetBrains Mono                | Notion 蓝 `#337ea9`     | 暖灰工作区+白色文档面       |
+| `things`     | Things 3 (Obsidian 热门主题) | Plus Jakarta Sans / Inter / JetBrains Mono    | iOS 蓝 `#2e80f2`        | 零边框软填充，圆环 checkbox |
+| `anuppuccin` | AnuPpuccin / Catppuccin      | Nunito / Nunito Sans / Fira Code              | 木槿紫 `#8839ef`        | 粉彩色阶，h1–h6 各有彩色    |
+| `bluetopaz`  | Blue Topaz (中文社区热门)    | Noto Serif SC / Noto Sans SC / JetBrains Mono | 黄玉蓝 `#2f6fa7` + 朱砂 | 纸墨书卷气，三线表、章节号  |
 
 ## 切换主题
 
@@ -19,7 +18,7 @@
 
 ```ts
 export const siteTheme = {
-  preset: "things" as ThemePresetName, // current | minimal | notion | things | anuppuccin | bluetopaz
+  preset: "things" as ThemePresetName, // current | notion | things | anuppuccin | bluetopaz
 }
 ```
 
@@ -29,7 +28,7 @@ export const siteTheme = {
 
 ```bash
 cp site.theme.ts /tmp/site.theme.ts.bak
-for p in current minimal notion things anuppuccin bluetopaz; do
+for p in current notion things anuppuccin bluetopaz; do
   sed -i "s/preset: \"[a-z]*\" as ThemePresetName/preset: \"$p\" as ThemePresetName/" site.theme.ts
   npx quartz build
   rm -rf "preview/$p" && mkdir -p "preview/$p" && cp -r public/. "preview/$p/"
