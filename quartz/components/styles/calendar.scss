@@ -1,0 +1,662 @@
+/**
+ * 预约日历样式
+ * 从 ReservationCalendar.tsx 中提取并增强
+ */
+
+.reservation-calendar {
+  background: var(--light);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+// ==================== 头部 ====================
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.calendar-title {
+  font-size: 1.3rem;
+  margin: 0;
+  color: var(--dark);
+}
+
+.calendar-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cal-nav-btn,
+.cal-today-btn {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--lightgray);
+  background: var(--light);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--dark);
+
+  &:hover {
+    background: var(--lightgray);
+  }
+}
+
+.cal-current-range {
+  font-weight: 500;
+  min-width: 150px;
+  text-align: center;
+}
+
+.calendar-view-switcher {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.view-btn {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--lightgray);
+  background: var(--light);
+  cursor: pointer;
+  color: var(--dark);
+
+  &:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+
+  &:last-child {
+    border-radius: 0 4px 4px 0;
+  }
+
+  &.active {
+    background: var(--secondary);
+    color: white;
+    border-color: var(--secondary);
+  }
+}
+
+// ==================== 日历容器 ====================
+
+.calendar-container {
+  min-height: 500px;
+  border: 1px solid var(--lightgray);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.calendar-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 500px;
+  color: var(--gray);
+}
+
+// ==================== 周视图 / 日视图共用 ====================
+
+.week-view {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+}
+
+.day-view-grid {
+  grid-template-columns: 60px 1fr;
+}
+
+.week-header {
+  display: contents;
+}
+
+.week-header-cell {
+  padding: 0.5rem;
+  text-align: center;
+  border-bottom: 1px solid var(--lightgray);
+  font-weight: 500;
+  font-size: 0.85rem;
+
+  &.today {
+    background: var(--secondary);
+    color: white;
+  }
+}
+
+.time-column {
+  border-right: 1px solid var(--lightgray);
+}
+
+.time-slot {
+  height: 40px;
+  padding: 0 0.25rem;
+  font-size: 0.75rem;
+  color: var(--gray);
+  text-align: right;
+  border-bottom: 1px solid var(--lightgray);
+}
+
+.day-column {
+  position: relative;
+  border-right: 1px solid var(--lightgray);
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.hour-slot {
+  height: 40px;
+  border-bottom: 1px solid var(--lightgray);
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(55, 136, 216, 0.1);
+  }
+}
+
+// ==================== 预约事件块 ====================
+
+.event {
+  position: absolute;
+  // left 和 width 由 JS 动态设置（并行布局）
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: white;
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 1;
+  box-sizing: border-box;
+  border-left: 3px solid rgba(0, 0, 0, 0.2);
+
+  // 悬停效果
+  &:hover {
+    z-index: 2;
+    filter: brightness(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    .resize-handle {
+      opacity: 1;
+    }
+  }
+
+  // 正在 resize 时
+  &.resizing {
+    z-index: 10;
+    opacity: 0.85;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+    .resize-handle {
+      opacity: 1;
+    }
+  }
+}
+
+// 底部拖拽手柄（调整时长）
+.resize-handle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  cursor: ns-resize;
+  opacity: 0;
+  transition: opacity 0.15s;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.25));
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 1px;
+  }
+}
+
+// Resize 时显示的时间标签
+.resize-time-label {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+// 拖拽创建预览条
+.drag-preview {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  background: rgba(55, 136, 216, 0.3);
+  border: 2px dashed rgba(55, 136, 216, 0.7);
+  border-radius: 4px;
+  z-index: 5;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+// 全局拖拽状态：防止误选文本、统一光标
+.drag-active {
+  user-select: none;
+  cursor: ns-resize !important;
+  // 拖拽时禁止浏览器默认触摸手势（滚动等）
+  touch-action: none;
+
+  * {
+    cursor: ns-resize !important;
+  }
+}
+
+.event-title {
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-user {
+  display: block;
+  font-size: 0.7rem;
+  line-height: 1.15;
+  opacity: 0.95;
+}
+
+.event-equip {
+  display: block;
+  font-size: 0.65rem;
+  opacity: 0.75;
+  font-style: italic;
+}
+
+// ==================== 月视图 ====================
+
+.month-view {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.month-header-cell {
+  padding: 0.5rem;
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--lightgray);
+}
+
+.month-day {
+  min-height: 80px;
+  padding: 0.25rem;
+  border-right: 1px solid var(--lightgray);
+  border-bottom: 1px solid var(--lightgray);
+  cursor: pointer;
+
+  &:nth-child(7n) {
+    border-right: none;
+  }
+
+  &:hover {
+    background: rgba(55, 136, 216, 0.05);
+  }
+
+  &.other-month {
+    background: var(--lightgray);
+    opacity: 0.5;
+  }
+
+  &.today .day-number {
+    background: var(--secondary);
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.day-number {
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.month-event {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 0.7rem;
+  padding: 1px 4px;
+  border-radius: 2px;
+  color: white;
+  margin-bottom: 1px;
+  cursor: pointer;
+}
+
+.month-event-title,
+.month-event-user {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.month-event-user {
+  font-size: 0.62rem;
+  opacity: 0.9;
+}
+
+.month-event-more {
+  cursor: pointer;
+  font-weight: 500;
+
+  &:hover {
+    filter: brightness(1.2);
+  }
+}
+
+// ==================== 弹窗 ====================
+
+.reservation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--light);
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+  h3 {
+    margin: 0 0 1rem 0;
+    color: var(--dark);
+  }
+}
+
+.modal-meta {
+  margin: -0.3rem 0 0.9rem;
+  font-size: 0.8rem;
+  color: var(--gray);
+}
+
+.form-group {
+  margin-bottom: 1rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--gray);
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--lightgray);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: var(--secondary);
+    }
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.color-picker {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.color-option {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+
+  &.selected {
+    border-color: var(--dark);
+  }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.btn-cancel,
+.btn-delete,
+.btn-submit {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  border: none;
+}
+
+.btn-cancel {
+  background: var(--lightgray);
+  color: var(--dark);
+}
+
+.btn-delete {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-submit {
+  background: var(--secondary);
+  color: white;
+}
+
+// ==================== 登录提示 ====================
+
+.calendar-login-prompt {
+  text-align: center;
+  padding: 2rem;
+  color: var(--gray);
+}
+
+// ==================== 响应式（移动端完整适配） ====================
+
+@media (max-width: 768px) {
+  .reservation-calendar {
+    padding: 0.75rem;
+  }
+
+  .calendar-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .calendar-title {
+    font-size: 1.08rem;
+  }
+
+  .calendar-controls {
+    justify-content: space-between;
+    width: 100%;
+    gap: 0.35rem;
+  }
+
+  .cal-nav-btn,
+  .cal-today-btn {
+    min-height: 40px;
+    padding: 0.3rem 0.55rem;
+    font-size: 0.82rem;
+  }
+
+  .cal-current-range {
+    min-width: 0;
+    flex: 1 1 auto;
+    font-size: 0.82rem;
+  }
+
+  .calendar-view-switcher {
+    justify-content: stretch;
+    width: 100%;
+  }
+
+  .view-btn {
+    min-height: 40px;
+    flex: 1 1 0;
+    font-size: 0.82rem;
+  }
+
+  .calendar-container {
+    min-height: 440px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+  }
+
+  .week-view {
+    grid-template-columns: 48px repeat(7, minmax(92px, 1fr));
+    min-width: 700px;
+  }
+
+  .day-view-grid {
+    grid-template-columns: 48px minmax(260px, 1fr);
+    min-width: 320px;
+  }
+
+  .time-slot {
+    font-size: 0.68rem;
+    padding: 0 2px;
+  }
+
+  .event {
+    font-size: 0.68rem;
+    padding: 2px 3px;
+  }
+
+  .event-title {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .event-user,
+  .event-equip {
+    font-size: 0.62rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  // 触摸设备上 resize 手柄更大更容易点击
+  .resize-handle {
+    height: 14px;
+
+    &::after {
+      width: 30px;
+      height: 3px;
+      bottom: 4px;
+    }
+  }
+
+  // 触摸设备上 hour-slot 更大的点击区域
+  .hour-slot {
+    min-height: 44px; // iOS 最小触控目标
+  }
+
+  // 月视图移动端优化
+  .month-day {
+    min-height: 60px;
+    padding: 2px;
+  }
+
+  .day-number {
+    font-size: 0.75rem;
+  }
+
+  .month-event {
+    font-size: 0.62rem;
+    padding: 1px 2px;
+  }
+
+  .month-event-user {
+    font-size: 0.58rem;
+    opacity: 0.85;
+  }
+
+  // 弹窗移动端优化
+  .modal-content {
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+
+  .modal-actions {
+    flex-wrap: wrap;
+
+    .btn-cancel,
+    .btn-delete,
+    .btn-submit {
+      padding: 0.6rem 1rem;
+      min-height: 44px; // 触控最小高度
+    }
+  }
+
+  // 拖拽预览在移动端更明显
+  .drag-preview {
+    border-width: 3px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+}
