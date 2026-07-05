@@ -1,6 +1,12 @@
 import { Theme } from "../quartz/util/theme"
 
-export type ThemePresetName = "current" | "minimal" | "notion"
+export type ThemePresetName =
+  | "current"
+  | "minimal"
+  | "notion"
+  | "things"
+  | "anuppuccin"
+  | "bluetopaz"
 
 const current: Theme = {
   fontOrigin: "googleFonts",
@@ -37,8 +43,8 @@ const current: Theme = {
 }
 
 // minimal — Stripe / Vercel / Linear docs.
-// Pure white canvas, cool neutral slate grays, a single restrained indigo accent.
-// Hierarchy comes from type weight and 1px borders, never from color or shadow.
+// True-white canvas, cool slate neutrals, one restrained indigo accent.
+// Hierarchy from type weight and 1px hairlines — never color or shadow.
 const minimal: Theme = {
   fontOrigin: "googleFonts",
   cdnCaching: true,
@@ -49,33 +55,32 @@ const minimal: Theme = {
   },
   colors: {
     lightMode: {
-      light: "#ffffff", // page canvas — true white
-      lightgray: "#e8eaed", // 1px borders / rules
-      gray: "#8b909a", // muted meta text
-      darkgray: "#4a5160", // body copy (slate)
-      dark: "#1c2024", // headings / strong ink
-      secondary: "#4f46e5", // indigo accent (links, active)
-      tertiary: "#6366f1", // secondary indigo (hover)
-      highlight: "rgba(79, 70, 229, 0.06)", // faint accent wash
-      textHighlight: "#c7d2fe88", // ==highlight==
+      light: "#ffffff",
+      lightgray: "#e8eaed",
+      gray: "#8b909a",
+      darkgray: "#4a5160",
+      dark: "#1c2024",
+      secondary: "#4f46e5",
+      tertiary: "#6366f1",
+      highlight: "rgba(79, 70, 229, 0.06)",
+      textHighlight: "#c7d2fe88",
     },
     darkMode: {
-      light: "#0c0d10", // near-black canvas
-      lightgray: "#23262d", // borders
-      gray: "#6b7280", // muted meta
-      darkgray: "#c2c8d2", // body copy
-      dark: "#f4f6f8", // headings
-      secondary: "#818cf8", // indigo accent
-      tertiary: "#a5b4fc", // hover
+      light: "#0c0d10",
+      lightgray: "#23262d",
+      gray: "#6b7280",
+      darkgray: "#c2c8d2",
+      dark: "#f4f6f8",
+      secondary: "#818cf8",
+      tertiary: "#a5b4fc",
       highlight: "rgba(129, 140, 248, 0.1)",
       textHighlight: "#4f46e555",
     },
   },
 }
 
-// notion — Notion public page / Super.so / Potion.
-// Warm off-white page sitting on a soft warm-gray workspace, warm graphite ink,
-// calm muted-blue accent. Document blocks, not SaaS cards.
+// notion — Notion public pages. Real Notion values: graphite ink #37352f,
+// link blue #337ea9, accent orange #d9730d, warm hairlines, #191919 dark canvas.
 const notion: Theme = {
   fontOrigin: "googleFonts",
   cdnCaching: true,
@@ -86,26 +91,138 @@ const notion: Theme = {
   },
   colors: {
     lightMode: {
-      light: "#ffffff", // document surface — white pages
-      lightgray: "#ebeae8", // warm hairline borders / rules
-      gray: "#9b9588", // warm muted meta
-      darkgray: "#54504a", // warm body copy
-      dark: "#2f2c28", // Notion graphite ink
-      secondary: "#3a72b0", // calm muted blue (page links)
-      tertiary: "#cf8a5b", // warm clay secondary accent
-      highlight: "rgba(58, 114, 176, 0.07)",
-      textHighlight: "#fae9c466",
+      light: "#ffffff",
+      lightgray: "#ebeae8",
+      gray: "#9b9a97",
+      darkgray: "#57534e",
+      dark: "#37352f",
+      secondary: "#337ea9",
+      tertiary: "#d9730d",
+      highlight: "rgba(51, 126, 169, 0.08)",
+      textHighlight: "#fdecc8aa",
     },
     darkMode: {
-      light: "#23211e", // warm dark document surface
-      lightgray: "#37342f", // borders
-      gray: "#8c857a", // warm muted meta
-      darkgray: "#d6d0c6", // body copy
-      dark: "#f5f1ea", // warm light ink
-      secondary: "#7eb0de", // muted blue
-      tertiary: "#e3a979", // warm clay
-      highlight: "rgba(126, 176, 222, 0.12)",
-      textHighlight: "#c9a25e44",
+      light: "#191919",
+      lightgray: "#2e2e2e",
+      gray: "#7f7f7f",
+      darkgray: "#d3d1cb",
+      dark: "#ececec",
+      secondary: "#529cca",
+      tertiary: "#e2984a",
+      highlight: "rgba(82, 156, 202, 0.12)",
+      textHighlight: "#89632a66",
+    },
+  },
+}
+
+// things — Things 3 (Cultured Code). Crisp white, friendly iOS blue #2e80f2,
+// soft fills and generous radii instead of borders. Airy and approachable.
+// tertiary doubles as the global link-hover color, so it stays in the blue family.
+const things: Theme = {
+  fontOrigin: "googleFonts",
+  cdnCaching: true,
+  typography: {
+    header: "Plus Jakarta Sans",
+    body: "Inter",
+    code: "JetBrains Mono",
+  },
+  colors: {
+    lightMode: {
+      light: "#ffffff",
+      lightgray: "#e9ecef",
+      gray: "#97a1ab",
+      darkgray: "#43484d",
+      dark: "#1f2328",
+      secondary: "#2e80f2",
+      tertiary: "#1b6ad6",
+      highlight: "rgba(46, 128, 242, 0.08)",
+      textHighlight: "#ffe98a99",
+    },
+    darkMode: {
+      light: "#17191e",
+      lightgray: "#2a2d33",
+      gray: "#6d7680",
+      darkgray: "#c8cdd2",
+      dark: "#f2f4f6",
+      secondary: "#4b96f8",
+      tertiary: "#7cb3fa",
+      highlight: "rgba(75, 150, 248, 0.12)",
+      textHighlight: "#ffd60a3d",
+    },
+  },
+}
+
+// anuppuccin — AnuPpuccin / Catppuccin. Light = Latte, dark = Mocha (real palette
+// values). Mauve accent, pink secondary accent; per-level heading tints live in
+// the preset's SCSS block.
+const anuppuccin: Theme = {
+  fontOrigin: "googleFonts",
+  cdnCaching: true,
+  typography: {
+    header: "Nunito",
+    body: "Nunito Sans",
+    code: "Fira Code",
+  },
+  colors: {
+    lightMode: {
+      light: "#eff1f5", // latte base
+      lightgray: "#dce0e8", // latte crust
+      gray: "#8c8fa1", // latte overlay1
+      darkgray: "#5c5f77", // latte subtext1
+      dark: "#4c4f69", // latte text
+      secondary: "#8839ef", // latte mauve
+      tertiary: "#ea76cb", // latte pink
+      highlight: "rgba(136, 57, 239, 0.07)",
+      textHighlight: "#df8e1d4d", // latte yellow
+    },
+    darkMode: {
+      light: "#1e1e2e", // mocha base
+      lightgray: "#313244", // mocha surface0
+      gray: "#6c7086", // mocha overlay0
+      darkgray: "#bac2de", // mocha subtext1
+      dark: "#cdd6f4", // mocha text
+      secondary: "#cba6f7", // mocha mauve
+      tertiary: "#f5c2e7", // mocha pink
+      highlight: "rgba(203, 166, 247, 0.1)",
+      textHighlight: "#f9e2af40", // mocha yellow
+    },
+  },
+}
+
+// bluetopaz — Blue Topaz. Scholarly paper-and-ink: warm paper ground, topaz
+// blue, cinnabar seal-red hover (a deliberate scholarly touch). Serif headers.
+// Noto SC fonts have no italic axis on Google Fonts — includeItalic must stay
+// false for the body font or the whole css2 request 404s and all fonts fall back.
+const bluetopaz: Theme = {
+  fontOrigin: "googleFonts",
+  cdnCaching: true,
+  typography: {
+    header: { name: "Noto Serif SC", weights: [400, 500, 700] },
+    body: { name: "Noto Sans SC", weights: [400, 500, 700], includeItalic: false },
+    code: "JetBrains Mono",
+  },
+  colors: {
+    lightMode: {
+      light: "#faf7f0",
+      lightgray: "#e7dfd1",
+      gray: "#a29a87",
+      darkgray: "#4d4737",
+      dark: "#2c2a24",
+      secondary: "#2f6fa7",
+      tertiary: "#b0562f",
+      highlight: "rgba(47, 111, 167, 0.08)",
+      textHighlight: "#e8c47a66",
+    },
+    darkMode: {
+      light: "#1b2027",
+      lightgray: "#2e3642",
+      gray: "#7d8695",
+      darkgray: "#c9c4b4",
+      dark: "#f0ebdd",
+      secondary: "#6ea3d8",
+      tertiary: "#d98a63",
+      highlight: "rgba(110, 163, 216, 0.12)",
+      textHighlight: "#d9a05f40",
     },
   },
 }
@@ -114,6 +231,9 @@ const presets: Record<ThemePresetName, Theme> = {
   current,
   minimal,
   notion,
+  things,
+  anuppuccin,
+  bluetopaz,
 }
 
 export function createThemePreset(name: ThemePresetName): Theme {
