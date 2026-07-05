@@ -2,3 +2,4 @@ public
 node_modules
 .quartz-cache
 preview
+serve-previews.mjs
