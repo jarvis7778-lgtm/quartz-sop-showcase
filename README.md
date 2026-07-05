@@ -68,6 +68,18 @@ export SUPABASE_ANON_KEY="your-anon-key"
 npm run dev
 ```
 
+## Themes
+
+Six complete visual presets ship with the template — `current` (default), `minimal` (Stripe/Vercel docs), `notion` (Notion workspace), `things` (Things 3), `anuppuccin` (Catppuccin pastels), and `bluetopaz` (scholarly paper-and-ink, CJK-friendly serif). Switch with one line in `site.theme.ts`:
+
+```ts
+export const siteTheme = {
+  preset: "things" as ThemePresetName,
+}
+```
+
+Each preset covers the homepage, SOP library, article typography, and both light/dark modes. See [docs/themes.md](./docs/themes.md) for the full gallery, preview workflow, and how to add your own preset.
+
 ## Content Workflow
 
 Edit Markdown under `content/`:
