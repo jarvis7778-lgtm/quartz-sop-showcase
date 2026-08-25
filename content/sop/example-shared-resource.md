@@ -1,29 +1,45 @@
 ---
-title: Shared Resource Booking
+title: 共享资源使用与交接
+description: 针对设备、会议室或演示环境的预约、使用与归还流程。
+tags:
+  - operations
+  - example
 ---
 
-# Shared Resource Booking
+# 共享资源使用与交接
 
-Use this page to document how your team reserves shared resources.
+## 适用范围
 
-## Scope
+适用于数量有限、需要排期或必须在使用后恢复状态的共享资源，例如设备、会议室、评审时段和演示环境。
 
-This workflow applies to any resource with limited availability, such as equipment, rooms, review slots, or demo environments.
+## 使用前
 
-## Booking steps
+1. 确认资源当前状态为“可用”，并阅读上一条异常记录。
+2. 选择所需时段，标题中写明用途和负责人。
+3. 若可能影响其他人，在开始前发送简短通知。
+4. 检查必要附件、线缆、账号或环境快照。
 
-1. Open the [[calendar|Reservation Calendar]].
-2. Choose an available time window.
-3. Add a clear title and optional resource category.
-4. Save the reservation.
-5. Update or cancel the reservation if plans change.
+## 使用中
 
-## Conflict rules
+- 不覆盖他人的预约；确需调整时，由双方明确确认。
+- 只改变本次任务需要的设置，并记录无法自动恢复的改动。
+- 发现安全、性能或数据异常时停止操作，不继续扩大影响面。
 
-- Do not overwrite another user's reservation without agreement.
-- Keep booking titles understandable to the whole team.
-- Prefer shorter reservations when demand is high.
+## 归还检查表
 
-## Admin notes
+- [ ] 删除本次产生的临时文件和个人信息。
+- [ ] 恢复约定的默认配置或基线快照。
+- [ ] 确认资源能够被下一位使用者正常启动。
+- [ ] 记录耗材、损坏、错误或待处理事项。
+- [ ] 提前结束时释放剩余时段。
 
-The calendar stores data in Supabase. Review `supabase/migrations/001_initial_schema.sql` before production use.
+## 异常交接
+
+| 状态           | 动作                           | 通知对象     |
+| -------------- | ------------------------------ | ------------ |
+| 可继续使用     | 记录现象与规避方式             | 下一位使用者 |
+| 需要维护       | 标记为暂停使用并附最短复现步骤 | 资源管理员   |
+| 涉及安全或数据 | 立即停止、保留证据、限制传播   | 负责人       |
+
+> [!note] 静态展示说明
+> 本展示站不连接预约数据库。真实团队可以把预约入口链接到自己的日历、工单或资产系统。

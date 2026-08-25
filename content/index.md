@@ -1,26 +1,7 @@
 ---
-title: Team SOP Knowledge Base
+title: Cfour SOP Gallery
+socialDescription: 八套主题、真实流程示例与纯静态发布路径组成的 SOP 展示馆。
 comments: false
 ---
 
-# Team SOP Knowledge Base
-
-A reusable template for publishing team standard operating procedures, onboarding notes, and internal knowledge as a searchable static website.
-
-## What this template includes
-
-- Markdown/Obsidian authoring workflow
-- Quartz-powered static site generation
-- GitHub OAuth sign-in via Supabase
-- Page comments and threaded replies
-- Page-level annotations
-- Reservation calendar for shared resources
-
-## Start here
-
-- [[sop/index|SOP Library]]
-- [[calendar|Reservation Calendar]]
-- [[sop/example-onboarding|Example: New Member Onboarding]]
-- [[sop/example-shared-resource|Example: Shared Resource Booking]]
-
-> Replace these example pages with your own team workflows before publishing.
+此页由展示站专用首页组件渲染；Markdown 仅保留页面元数据与搜索摘要。

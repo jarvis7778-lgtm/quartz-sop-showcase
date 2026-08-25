@@ -12,12 +12,12 @@ const siteBaseUrl = process.env.SITE_URL?.replace(/^https?:\/\//, "").replace(/\
  */
 const config: QuartzConfig = {
   configuration: {
-    pageTitle: "SOP Knowledge Base",
+    pageTitle: "Cfour SOP Gallery",
     pageTitleSuffix: "",
     enableSPA: true,
     enablePopovers: true,
     analytics: null,
-    locale: "en-US",
+    locale: "zh-CN",
     baseUrl: siteBaseUrl,
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "modified",

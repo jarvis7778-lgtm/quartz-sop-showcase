@@ -1,5 +1,5 @@
 import { ThemePresetName } from "./themes"
 
 export const siteTheme: { preset: ThemePresetName } = {
-  preset: "current",
+  preset: "notion",
 }

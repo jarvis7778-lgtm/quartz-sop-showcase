@@ -1,28 +1,50 @@
 ---
-title: Document Review Checklist
+title: 文档审核与发布
+description: 从提交到批准的四阶段文档质量检查流程。
+tags:
+  - review
+  - example
 ---
 
-# Document Review Checklist
+# 文档审核与发布
 
-Use this page as a generic checklist for reviewing shared documentation before publishing.
+## 目标
 
-## Content quality
+确保一份流程文档在发布前能够被目标读者独立执行，并且不泄露敏感信息。
 
-- The goal is clear in the first section.
-- Steps are ordered and testable.
-- Required permissions, tools, and inputs are listed.
-- Expected outputs are described.
+## 角色
 
-## Safety and privacy
+| 角色   | 职责                               |
+| ------ | ---------------------------------- |
+| 作者   | 提交内容、自检并响应修改意见       |
+| 复核人 | 按实际步骤走一遍，指出无法验证之处 |
+| 批准人 | 判断风险边界与发布范围             |
 
-- No credentials, tokens, or private URLs are included.
-- Screenshots are redacted.
-- Personal names are removed unless intentionally public.
-- Organization-specific examples are replaced with placeholders.
+## 阶段一：作者自检
 
-## Publishing
+- [ ] 第一屏说明目标、适用范围和最终交付物。
+- [ ] 每个动作使用明确动词，避免“适当处理”“自行确认”等模糊表达。
+- [ ] 所有权限、工具和输入在执行前列出。
+- [ ] 命令、链接和截图均可以在当前环境复现。
+- [ ] 异常路径说明负责人和升级条件。
 
-1. Preview the page locally.
-2. Ask one teammate to follow the steps.
-3. Fix unclear instructions.
-4. Merge and deploy.
+## 阶段二：隐私检查
+
+- [ ] 没有密钥、令牌、密码或内部地址。
+- [ ] 截图中的姓名、邮箱、路径和会话信息已经移除。
+- [ ] 示例数据不会被误认为真实客户或真实业务数据。
+- [ ] 外部素材具备可公开使用的许可。
+
+## 阶段三：走查
+
+1. 复核人从一个干净环境开始，不接受作者的口头补充。
+2. 每完成一步，就记录看到的结果与文档预期是否一致。
+3. 遇到无法继续的地方立即停止，并把缺失信息写成具体修改项。
+4. 作者修改后，只重走受影响路径和一条相邻回归路径。
+
+## 阶段四：批准与发布
+
+> [!success] 发布门槛
+> 作者自检全部完成，复核人能够独立走通主路径，批准人确认发布范围和风险边界。
+
+发布后保存：最终链接、提交版本、批准人和发布日期。若内容涉及周期性变化，再设置下一次复核日期。

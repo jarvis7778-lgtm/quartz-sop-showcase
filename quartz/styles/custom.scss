@@ -7,6 +7,7 @@
 @use "../../themes/presets/carbon/theme.scss" as carbon-theme;
 @use "../../themes/presets/nocturne/theme.scss" as nocturne-theme;
 @use "../../themes/presets/fieldnotes/theme.scss" as fieldnotes-theme;
+@use "../components/styles/showcase.scss" as showcase;
 
 // Runtime theme switching changes typography and control density without a
 // reload. Keep the shared mobile shell intrinsically shrinkable for every

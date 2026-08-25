@@ -30,15 +30,19 @@ const contentRightComponents = [
   Component.Backlinks(),
 ].filter(Boolean) as PageLayout["right"]
 
+const templateRepositoryUrl = process.env.TEMPLATE_REPOSITORY_URL
+const footerLinks: Record<string, string> = {
+  "SOP 示例库": "/sop/",
+  ...(templateRepositoryUrl ? { "GitHub 模板": templateRepositoryUrl } : {}),
+}
+
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [...sharedHeaderComponents, Component.HomepageSlots()],
   afterBody: sharedAfterBodyComponents,
   footer: Component.Footer({
-    links: {
-      Quartz: "https://github.com/jackyzha0/quartz",
-    },
+    links: footerLinks,
   }),
 }
 

@@ -39,7 +39,9 @@ export default (() => {
     const usesCustomOgImage = ctx.cfg.plugins.emitters.some(
       (e) => e.name === CustomOgImagesEmitterName,
     )
-    const ogImageDefaultPath = `https://${cfg.baseUrl}/static/og-image.png`
+    const ogImageDefaultPath = cfg.baseUrl
+      ? `https://${cfg.baseUrl}/static/og-showcase.png`
+      : undefined
     const activeManifest = getThemeManifest(cfg.themePreset ?? "")
     const activeGoogleFontHref =
       activeManifest?.theme.fontOrigin === "googleFonts"
@@ -75,7 +77,7 @@ export default (() => {
         <meta property="og:description" content={description} />
         <meta property="og:image:alt" content={description} />
 
-        {!usesCustomOgImage && (
+        {!usesCustomOgImage && ogImageDefaultPath && (
           <>
             <meta property="og:image" content={ogImageDefaultPath} />
             <meta property="og:image:url" content={ogImageDefaultPath} />

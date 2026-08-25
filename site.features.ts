@@ -38,7 +38,9 @@ export function validateSiteFeatureConfig(config: SiteFeatureConfig): SiteFeatur
   return config
 }
 
-const selectedMode: SiteMode = process.env.SITE_MODE === "collab" ? "collab" : "static"
+// The branded showcase is intentionally backend-free. Collaboration remains a
+// capability of the public template, not of this independently deployed site.
+const selectedMode: SiteMode = "static"
 
 export const siteFeatureConfig: SiteFeatureConfig = validateSiteFeatureConfig({
   mode: selectedMode,
