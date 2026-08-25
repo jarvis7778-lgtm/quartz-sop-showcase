@@ -5,11 +5,15 @@ on:
   push:
     branches:
       - main
+      - master
   workflow_dispatch:
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        site-mode: [static, collab]
     steps:
       - uses: actions/checkout@v6
         with:
@@ -31,4 +35,15 @@ jobs:
         run: npm test
 
       - name: Build site
+        env:
+          SITE_MODE: ${{ matrix.site-mode }}
+          SUPABASE_URL: ${{ matrix.site-mode == 'collab' && 'https://example.supabase.co' || '' }}
+          SUPABASE_ANON_KEY: ${{ matrix.site-mode == 'collab' && 'public-anon-placeholder' || '' }}
         run: npx quartz build
+
+  database-migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verify PostgreSQL migrations and grants
+        run: bash scripts/verify-postgres-migrations.sh

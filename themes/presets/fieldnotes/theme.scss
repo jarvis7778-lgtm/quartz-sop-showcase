@@ -1,0 +1,417 @@
+body[data-theme-preset="fieldnotes"] {
+  --fn-paper: var(--light);
+  --fn-ink: var(--dark);
+  --fn-green: var(--secondary);
+  --fn-orange: var(--tertiary);
+  --fn-mono: var(--codeFont);
+  --fn-serif: var(--headerFont);
+  // faint blue-print grid drawn on tiles
+  --fn-grid: color-mix(in srgb, var(--darkgray) 12%, transparent);
+  --fn-rule: color-mix(in srgb, var(--darkgray) 22%, transparent);
+  :root[saved-theme="dark"] & {
+    --fn-grid: color-mix(in srgb, var(--gray) 22%, transparent);
+    --fn-rule: color-mix(in srgb, var(--gray) 34%, transparent);
+  }
+
+  background: var(--fn-paper);
+
+  // faint ruled-paper baseline grid behind the content column
+  .center {
+    box-sizing: border-box;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent calc(1.85rem - 1px),
+      var(--fn-grid) 1.85rem
+    );
+    background-position: 0 0.4rem;
+  }
+
+  // --- Shell: stamped notebook label ---
+  .sidebar.left .page-title {
+    font-family: var(--fn-serif);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .explorer {
+    a,
+    button.explorer-toggle {
+      border-radius: 0;
+      transition:
+        background 90ms ease,
+        box-shadow 90ms ease;
+    }
+    a:hover {
+      background: var(--highlight);
+      box-shadow: inset 3px 0 0 var(--fn-orange);
+    }
+  }
+  .sidebar .toc a:hover,
+  .sidebar .backlinks a:hover {
+    background: var(--highlight);
+    box-shadow: inset 3px 0 0 var(--fn-orange);
+  }
+
+  // --- Homepage: a field logbook cover page ---
+  &[data-slug="index"] {
+    .center > .popover-hint > article,
+    .center > article {
+      & > [data-theme-slot="hero"] {
+        font-family: var(--fn-serif);
+        font-size: 2.6rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        line-height: 1.08;
+        color: var(--fn-ink);
+        margin-top: 1.8rem;
+        margin-bottom: 0.6rem;
+        padding-bottom: 1rem;
+        border: none;
+        border-bottom: 2px solid var(--fn-ink);
+        position: relative;
+        // clipped "FIELD LOG" tab, offset like a taped label
+        &::before {
+          content: "FIELD LOG № 01";
+          display: inline-block;
+          font-family: var(--fn-mono);
+          font-size: 0.68rem;
+          font-weight: 500;
+          letter-spacing: 0.12em;
+          color: var(--fn-paper);
+          background: var(--fn-orange);
+          padding: 0.2rem 0.6rem;
+          margin-bottom: 0.9rem;
+          transform: rotate(-1.2deg);
+        }
+      }
+      & > [data-theme-slot="intro"] {
+        font-size: 1.02rem;
+        color: var(--darkgray);
+        line-height: 1.7;
+        max-width: 36rem;
+        margin-top: 1rem;
+        margin-bottom: 2.2rem;
+      }
+      & > [data-theme-slot="section-heading"] {
+        font-family: var(--fn-mono);
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--fn-green);
+        border: none;
+        margin-top: 2.6rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px dashed var(--fn-rule);
+        &::before {
+          content: "▮ ";
+          color: var(--fn-orange);
+        }
+      }
+      // plain list: pencil-ticked field entries
+      & > [data-theme-slot="feature-list"] {
+        list-style: none;
+        padding-left: 0;
+        li {
+          padding: 0.4rem 0 0.4rem 1.7rem;
+          position: relative;
+          line-height: 1.65;
+          border-bottom: 1px dashed var(--fn-rule);
+          &::before {
+            content: "✓";
+            position: absolute;
+            left: 0.15rem;
+            top: 0.4rem;
+            font-family: var(--fn-mono);
+            color: var(--fn-green);
+            font-weight: 700;
+          }
+        }
+      }
+      // link lists: index cards clipped to a ruled board, orange corner tab
+      & > [data-theme-slot="start-links"] {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        li {
+          margin: 0;
+        }
+        a.internal {
+          display: block;
+          padding: 1.15rem 1.2rem 1.25rem;
+          border: 1px solid var(--fn-rule);
+          border-radius: 0;
+          background: color-mix(in srgb, var(--fn-paper) 92%, var(--darkgray));
+          color: var(--fn-ink);
+          font-family: var(--fn-serif);
+          font-weight: 500;
+          font-size: 1rem;
+          line-height: 1.4;
+          position: relative;
+          box-shadow: 2px 2px 0 var(--fn-rule);
+          transition:
+            transform 130ms ease,
+            box-shadow 130ms ease;
+          // clipped orange corner — a taped index tab
+          &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            border-width: 0 0.9rem 0.9rem 0;
+            border-style: solid;
+            border-color: transparent var(--fn-orange) transparent transparent;
+          }
+          &:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 4px 4px 0 var(--fn-rule);
+            color: var(--fn-green);
+          }
+        }
+        @media (max-width: 800px) {
+          grid-template-columns: 1fr;
+        }
+      }
+      // blockquote: a taped-in margin note
+      & > [data-theme-slot="notice"] {
+        border: 1px dashed var(--fn-rule);
+        border-left: 4px solid var(--fn-orange);
+        border-radius: 0;
+        background: color-mix(in srgb, var(--fn-orange) 6%, var(--fn-paper));
+        color: var(--darkgray);
+        margin: 2.4rem 0 0;
+        padding: 0.9rem 1.2rem;
+        font-size: 0.95rem;
+        p {
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  // --- SOP library: a logbook index with entry numbers ---
+  &[data-slug="sop/index"] {
+    ul.section-ul {
+      margin-top: 1.2rem;
+      border-top: 2px solid var(--fn-ink);
+      counter-reset: fn-entry;
+    }
+    li.section-li {
+      margin: 0;
+      border-bottom: 1px dashed var(--fn-rule);
+      & > .section {
+        padding: 0.6rem 0.4rem;
+        transition:
+          background 100ms ease,
+          box-shadow 100ms ease;
+        &:hover {
+          background: var(--highlight);
+          box-shadow: inset 3px 0 0 var(--fn-orange);
+        }
+        h3 {
+          font-family: var(--fn-serif);
+          font-size: 1rem;
+          font-weight: 500;
+          margin: 0;
+          a {
+            background: transparent;
+            &::before {
+              counter-increment: fn-entry;
+              content: "№" counter(fn-entry, decimal-leading-zero);
+              font-family: var(--fn-mono);
+              font-size: 0.76rem;
+              color: var(--fn-orange);
+              margin-right: 0.8rem;
+            }
+          }
+        }
+        .meta {
+          font-size: 0.78rem;
+          font-family: var(--fn-mono);
+          opacity: 0.6;
+        }
+      }
+    }
+  }
+
+  // --- Article: serif field-notebook typography ---
+  .center > article,
+  article.popover-hint {
+    & h1,
+    & h2,
+    & h3 {
+      font-family: var(--fn-serif);
+      color: var(--fn-ink);
+      font-weight: 600;
+      line-height: 1.2;
+    }
+    & h1 {
+      font-size: 2.1rem;
+      margin-top: 2.3rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--fn-ink);
+    }
+    & h2 {
+      font-size: 1.55rem;
+      margin-top: 2.2rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px dashed var(--fn-rule);
+      &::before {
+        content: "§ ";
+        font-family: var(--fn-mono);
+        font-weight: 500;
+        color: var(--fn-orange);
+      }
+    }
+    & h3 {
+      font-size: 1.25rem;
+      margin-top: 1.7rem;
+      color: var(--darkgray);
+    }
+    & h4,
+    & h5,
+    & h6 {
+      font-family: var(--fn-mono);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+      color: var(--fn-green);
+      margin-top: 1.5rem;
+    }
+
+    & p,
+    & li {
+      line-height: 1.75;
+    }
+
+    & strong,
+    & b {
+      color: var(--fn-ink);
+      font-weight: 700;
+      // highlighter swipe under bold — annotated feel
+      background: linear-gradient(transparent 62%, var(--textHighlight) 62%);
+    }
+    & em,
+    & i {
+      color: var(--fn-green);
+    }
+
+    // links: forest-green with a hand-drawn orange underline on hover
+    & p a,
+    & li a {
+      color: var(--fn-green);
+      background: transparent;
+      padding: 0;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      text-decoration-color: color-mix(in srgb, var(--fn-green) 55%, transparent);
+      text-underline-offset: 3px;
+      transition: color 100ms ease;
+      &:hover {
+        color: var(--fn-orange);
+        text-decoration-color: var(--fn-orange);
+        text-decoration-style: solid;
+      }
+    }
+
+    // inline code: a typewriter label chip
+    & p code,
+    & li code {
+      color: var(--fn-ink);
+      background: color-mix(in srgb, var(--fn-orange) 12%, var(--fn-paper));
+      border: 1px solid var(--fn-rule);
+      border-radius: 0;
+      padding: 0.06rem 0.34rem;
+      font-size: 0.85em;
+    }
+
+    & pre {
+      border: 1px solid var(--fn-rule);
+      border-left: 4px solid var(--fn-green);
+      border-radius: 0;
+      background: color-mix(in srgb, var(--fn-paper) 90%, var(--darkgray));
+    }
+
+    // tables: a ruled logbook grid
+    & table {
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      border: 1px solid var(--fn-rule);
+    }
+    & th {
+      text-align: left;
+      font-family: var(--fn-mono);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 600;
+      color: var(--fn-ink);
+      background: color-mix(in srgb, var(--fn-green) 12%, var(--fn-paper));
+      border: 1px solid var(--fn-rule);
+      padding: 0.45rem 0.8rem;
+    }
+    & td {
+      border: 1px solid var(--fn-rule);
+      padding: 0.45rem 0.8rem;
+    }
+
+    & blockquote {
+      border: none;
+      border-left: 4px solid var(--fn-orange);
+      border-radius: 0;
+      background: color-mix(in srgb, var(--fn-orange) 5%, var(--fn-paper));
+      margin-left: 0;
+      padding: 0.7rem 1.2rem;
+      color: var(--darkgray);
+      font-style: italic;
+    }
+    & .callout {
+      border: 1px solid var(--fn-rule);
+      border-left: 4px solid var(--callout-color, var(--fn-green));
+      border-radius: 0;
+      box-shadow: 2px 2px 0 var(--fn-rule);
+      background: color-mix(in srgb, var(--fn-paper) 94%, var(--darkgray));
+    }
+
+    // task lists: hand-drawn square checkboxes
+    & input[type="checkbox"] {
+      appearance: none;
+      width: 0.95rem;
+      height: 0.95rem;
+      border: 1.5px solid var(--fn-green);
+      border-radius: 0;
+      margin-right: 0.45rem;
+      transform: translateY(0.12rem);
+      transition: all 110ms ease;
+      &:checked {
+        background: var(--fn-green);
+        box-shadow: inset 0 0 0 2px var(--fn-paper);
+      }
+    }
+
+    & .katex,
+    & .katex-display {
+      color: var(--fn-ink);
+    }
+    & .katex-display {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      border: 1px dashed var(--fn-rule);
+      border-left: 4px solid var(--fn-green);
+      background: color-mix(in srgb, var(--fn-paper) 92%, var(--darkgray));
+    }
+
+    // images: a taped-in photograph with a white print border
+    & img {
+      border: 1px solid var(--fn-rule);
+      border-radius: 0;
+      padding: 5px;
+      background: #ffffff;
+      box-shadow: 2px 2px 0 var(--fn-rule);
+    }
+  }
+}

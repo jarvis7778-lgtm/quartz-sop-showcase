@@ -30,7 +30,7 @@ CREATE TABLE annotations (
   page_path TEXT NOT NULL,           -- 页面路径 "/sop/xxx"
   paragraph_id TEXT NOT NULL,        -- 段落标识符
   text_selection TEXT,               -- 选中的文本内容
-  content TEXT NOT NULL,             -- 注释内容
+  content TEXT NOT NULL CHECK (char_length(content) BETWEEN 1 AND 5000), -- 注释内容
   author_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -46,7 +46,7 @@ CREATE INDEX idx_annotations_author ON annotations(author_id);
 CREATE TABLE comments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   page_path TEXT NOT NULL,           -- 页面路径
-  content TEXT NOT NULL,             -- 评论内容
+  content TEXT NOT NULL CHECK (char_length(content) BETWEEN 1 AND 5000), -- 评论内容
   author_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   parent_id UUID REFERENCES comments(id) ON DELETE CASCADE,  -- 回复的父评论
   likes INTEGER DEFAULT 0,           -- 点赞数
@@ -75,8 +75,8 @@ CREATE TABLE comment_likes (
 -- ============================================
 CREATE TABLE reservations (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  title TEXT NOT NULL,               -- 预约标题/实验名称
-  description TEXT,                  -- 详细描述
+  title TEXT NOT NULL CHECK (char_length(title) BETWEEN 1 AND 200), -- 预约标题/实验名称
+  description TEXT CHECK (description IS NULL OR char_length(description) <= 2000), -- 详细描述
   equipment TEXT,                    -- 设备分类 (可选)
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   start_time TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -191,6 +191,11 @@ ALTER TABLE reservations ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "用户可查看所有成员" ON users
   FOR SELECT USING (auth.uid() IS NOT NULL);
 
+-- RLS 只控制行，不控制列；禁止浏览器角色读取所有成员邮箱。
+REVOKE SELECT ON users FROM anon, authenticated;
+GRANT SELECT (id, github_id, username, avatar_url, role, created_at, updated_at)
+  ON users TO authenticated;
+
 -- 用户可创建自己的记录（禁止伪造 admin）
 CREATE POLICY "用户可创建自己" ON users
   FOR INSERT WITH CHECK (id = auth.uid() AND role = 'member');
@@ -283,7 +288,8 @@ CREATE POLICY "预约者或管理员可删除" ON reservations
 -- ============================================
 -- 8. 视图: 带用户信息的评论
 -- ============================================
-CREATE VIEW comments_with_author AS
+CREATE VIEW comments_with_author
+WITH (security_invoker = true) AS
 SELECT 
   c.*,
   u.username as author_name,
@@ -291,13 +297,20 @@ SELECT
 FROM comments c
 JOIN users u ON c.author_id = u.id;
 
+REVOKE ALL ON comments_with_author FROM anon;
+GRANT SELECT ON comments_with_author TO authenticated;
+
 -- ============================================
 -- 9. 视图: 带用户信息的预约
 -- ============================================
-CREATE VIEW reservations_with_user AS
+CREATE VIEW reservations_with_user
+WITH (security_invoker = true) AS
 SELECT 
   r.*,
   u.username,
   u.avatar_url
 FROM reservations r
 JOIN users u ON r.user_id = u.id;
+
+REVOKE ALL ON reservations_with_user FROM anon;
+GRANT SELECT ON reservations_with_user TO authenticated;

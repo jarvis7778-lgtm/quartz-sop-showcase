@@ -1,7 +1,8 @@
 import { i18n } from "../i18n"
 import { FullSlug, getFileExtension, joinSegments, pathToRoot } from "../util/path"
 import { CSSResourceToStyleElement, JSResourceToScriptElement } from "../util/resources"
-import { googleFontHref, googleFontSubsetHref } from "../util/theme"
+import { googleFontSubsetHref } from "../util/theme"
+import { allPresetsGoogleFontHref, getThemeManifest } from "../../themes"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { unescapeHTML } from "../util/escape"
 import { CustomOgImagesEmitterName } from "../plugins/emitters/ogImage"
@@ -39,6 +40,11 @@ export default (() => {
       (e) => e.name === CustomOgImagesEmitterName,
     )
     const ogImageDefaultPath = `https://${cfg.baseUrl}/static/og-image.png`
+    const activeManifest = getThemeManifest(cfg.themePreset ?? "")
+    const activeGoogleFontHref =
+      activeManifest?.theme.fontOrigin === "googleFonts"
+        ? allPresetsGoogleFontHref([activeManifest])
+        : undefined
 
     return (
       <head>
@@ -48,16 +54,19 @@ export default (() => {
           <>
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" />
-            <link rel="stylesheet" href={googleFontHref(cfg.theme)} />
+            {/* Only the configured preset blocks first paint. Other preset fonts
+                are loaded on demand by the runtime switcher. */}
+            {activeGoogleFontHref && (
+              <link id="theme-fonts" rel="stylesheet" href={activeGoogleFontHref} />
+            )}
             {cfg.theme.typography.title && (
               <link rel="stylesheet" href={googleFontSubsetHref(cfg.theme, cfg.pageTitle)} />
             )}
           </>
         )}
-        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin="anonymous" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <meta name="og:site_name" content={cfg.pageTitle}></meta>
+        <meta property="og:site_name" content={cfg.pageTitle}></meta>
         <meta property="og:title" content={title} />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -80,6 +89,7 @@ export default (() => {
 
         {cfg.baseUrl && (
           <>
+            <link rel="canonical" href={socialUrl} />
             <meta property="twitter:domain" content={cfg.baseUrl}></meta>
             <meta property="og:url" content={socialUrl}></meta>
             <meta property="twitter:url" content={socialUrl}></meta>
@@ -87,6 +97,7 @@ export default (() => {
         )}
 
         <link rel="icon" href={iconPath} />
+        <meta name="theme-color" content={cfg.theme.colors.lightMode.light} />
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
 

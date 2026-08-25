@@ -1,0 +1,529 @@
+body[data-theme-preset="notion"] {
+  --nt-shell: #f7f6f3;
+  --nt-paper: #ffffff;
+  --nt-ink: #37352f;
+  --nt-muted: #787774;
+  --nt-line: rgba(55, 53, 47, 0.12);
+  --nt-hover: rgba(55, 53, 47, 0.065);
+  --nt-selected: rgba(35, 131, 226, 0.12);
+  --nt-callout: #f1f1ef;
+  --nt-yellow: rgba(255, 226, 143, 0.55);
+  --nt-code-red: #eb5757;
+  --nt-shadow: 0 1px 2px rgba(15, 15, 15, 0.04), 0 10px 32px rgba(15, 15, 15, 0.035);
+
+  :root[saved-theme="dark"] & {
+    --nt-shell: #191919;
+    --nt-paper: #202020;
+    --nt-ink: #f1f1ef;
+    --nt-muted: #9b9b98;
+    --nt-line: rgba(255, 255, 255, 0.11);
+    --nt-hover: rgba(255, 255, 255, 0.055);
+    --nt-selected: rgba(35, 131, 226, 0.18);
+    --nt-callout: #292929;
+    --nt-yellow: rgba(143, 107, 27, 0.45);
+    --nt-code-red: #ff7369;
+    --nt-shadow: none;
+  }
+
+  background: var(--nt-shell);
+  color: var(--nt-ink);
+
+  // Workspace shell: subdued navigation wrapped around a bright, calm document.
+  @media (min-width: 801px) {
+    .page > #quartz-body {
+      column-gap: 0;
+    }
+
+    .sidebar.left {
+      padding-right: 1.25rem;
+      background: var(--nt-shell);
+    }
+
+    .sidebar.right {
+      padding-left: 1.25rem;
+      background: var(--nt-shell);
+    }
+
+    .center {
+      box-sizing: border-box;
+      min-height: calc(100vh - 2rem);
+      margin-block: 1rem;
+      padding: 0 3.4rem 4rem;
+      border: 1px solid var(--nt-line);
+      border-radius: 10px;
+      background: var(--nt-paper);
+      box-shadow: var(--nt-shadow);
+    }
+  }
+
+  .sidebar.left .page-title {
+    position: relative;
+    padding: 0.42rem 0.45rem 0.42rem 2.15rem;
+    border-radius: 5px;
+    font-size: 0.96rem;
+    font-weight: 650;
+    letter-spacing: -0.012em;
+
+    &::before {
+      content: "N";
+      position: absolute;
+      left: 0.45rem;
+      top: 50%;
+      display: grid;
+      width: 1.25rem;
+      height: 1.25rem;
+      place-items: center;
+      transform: translateY(-50%) rotate(-2deg);
+      border: 1px solid var(--nt-line);
+      border-radius: 4px;
+      background: var(--nt-paper);
+      color: var(--nt-ink);
+      box-shadow: 0 1px 2px rgba(15, 15, 15, 0.08);
+      font-family: Georgia, serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    &:hover {
+      background: var(--nt-hover);
+    }
+  }
+
+  .sidebar.left > .flex-component {
+    padding: 0.2rem 0.35rem;
+  }
+
+  .explorer {
+    margin-top: 0.65rem;
+
+    button.explorer-toggle {
+      color: var(--nt-muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.035em;
+      text-transform: uppercase;
+    }
+
+    a,
+    button.explorer-toggle,
+    .folder-container {
+      border-radius: 5px;
+      transition: background 100ms ease;
+    }
+
+    a {
+      padding-block: 0.18rem;
+      color: var(--nt-muted);
+      font-size: 0.88rem;
+
+      &:hover {
+        background: var(--nt-hover);
+        color: var(--nt-ink);
+      }
+    }
+  }
+
+  .sidebar.right {
+    color: var(--nt-muted);
+    font-size: 0.82rem;
+
+    .toc,
+    .backlinks {
+      border-left: 1px solid var(--nt-line);
+      padding-left: 0.9rem;
+    }
+
+    a:hover {
+      border-radius: 4px;
+      background: var(--nt-hover);
+    }
+  }
+
+  // Page metadata above the Markdown body should feel like Notion page properties.
+  .center > .breadcrumb-container {
+    margin-top: 1.35rem;
+    color: var(--nt-muted);
+    font-size: 0.78rem;
+  }
+
+  .center > h1.article-title {
+    margin-top: 2.2rem;
+    margin-bottom: 0.65rem;
+    color: var(--nt-ink);
+    font-size: clamp(2.05rem, 4vw, 2.8rem);
+    font-weight: 720;
+    letter-spacing: -0.035em;
+    line-height: 1.12;
+
+    &::before {
+      content: "📄";
+      display: block;
+      margin-bottom: 0.7rem;
+      font-size: 2.35rem;
+      line-height: 1;
+      filter: saturate(0.8);
+    }
+  }
+
+  .center > .content-meta,
+  .center > ul.tags {
+    color: var(--nt-muted);
+    font-size: 0.78rem;
+  }
+
+  .center > ul.tags {
+    padding-bottom: 1.35rem;
+    border-bottom: 1px solid var(--nt-line);
+  }
+
+  // Homepage is a recognizable Notion home page rather than a generic card grid.
+  &[data-slug="index"] {
+    .center {
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: "";
+        display: block;
+        height: 7.8rem;
+        margin: 0 -3.4rem 0;
+        background:
+          linear-gradient(120deg, rgba(143, 118, 91, 0.12), transparent 55%),
+          repeating-linear-gradient(
+            -12deg,
+            rgba(55, 53, 47, 0.018) 0,
+            rgba(55, 53, 47, 0.018) 1px,
+            transparent 1px,
+            transparent 9px
+          ),
+          var(--nt-callout);
+        border-bottom: 1px solid var(--nt-line);
+      }
+    }
+
+    .center > .popover-hint > article,
+    .center > article {
+      & > [data-theme-slot="hero"] {
+        position: relative;
+        margin: -1.55rem 0 0.7rem;
+        border: none;
+        color: var(--nt-ink);
+        font-size: clamp(2.15rem, 5vw, 3rem);
+        font-weight: 720;
+        letter-spacing: -0.04em;
+        line-height: 1.08;
+
+        &::before {
+          content: "📚";
+          display: block;
+          width: fit-content;
+          margin-bottom: 0.8rem;
+          font-size: 2.8rem;
+          line-height: 1;
+          filter: saturate(0.78);
+        }
+      }
+
+      & > [data-theme-slot="intro"] {
+        margin-bottom: 1.8rem;
+        padding-bottom: 1.3rem;
+        border-bottom: 1px solid var(--nt-line);
+        color: var(--nt-muted);
+        font-size: 1rem;
+        line-height: 1.65;
+      }
+
+      & > [data-theme-slot="section-heading"] {
+        margin: 2.2rem 0 0.7rem;
+        border: none;
+        color: var(--nt-ink);
+        font-size: 1.15rem;
+        font-weight: 650;
+      }
+
+      & > [data-theme-slot="feature-list"] {
+        list-style: none;
+        padding: 0;
+
+        li {
+          position: relative;
+          margin: 0;
+          padding: 0.34rem 0.45rem 0.34rem 1.8rem;
+          border-radius: 4px;
+          line-height: 1.55;
+
+          &::before {
+            content: "";
+            position: absolute;
+            left: 0.45rem;
+            top: 0.68rem;
+            width: 0.82rem;
+            height: 0.82rem;
+            border: 1.4px solid var(--nt-muted);
+            border-radius: 2px;
+            opacity: 0.7;
+          }
+
+          &:hover {
+            background: var(--nt-hover);
+          }
+        }
+      }
+
+      & > [data-theme-slot="start-links"] {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0;
+        overflow: hidden;
+        padding: 0;
+        border: 1px solid var(--nt-line);
+        border-radius: 7px;
+        list-style: none;
+
+        li {
+          min-width: 0;
+          margin: 0;
+          border-right: 1px solid var(--nt-line);
+          border-bottom: 1px solid var(--nt-line);
+
+          &:nth-child(2n) {
+            border-right: 0;
+          }
+        }
+
+        a.internal {
+          display: block;
+          min-height: 3.2rem;
+          padding: 0.8rem 0.9rem 0.8rem 2.6rem;
+          background: var(--nt-paper);
+          color: var(--nt-ink);
+          font-size: 0.9rem;
+          font-weight: 530;
+          line-height: 1.45;
+          transition: background 100ms ease;
+
+          &::before {
+            content: "▤";
+            position: absolute;
+            margin-left: -1.65rem;
+            color: var(--nt-muted);
+            font-size: 1.05rem;
+          }
+
+          &:hover {
+            background: var(--nt-hover);
+          }
+        }
+      }
+
+      & > [data-theme-slot="notice"] {
+        position: relative;
+        margin: 1.8rem 0 0;
+        padding: 1rem 1.1rem 1rem 3rem;
+        border: none;
+        border-radius: 5px;
+        background: var(--nt-callout);
+        color: var(--nt-ink);
+
+        &::before {
+          content: "💡";
+          position: absolute;
+          left: 1rem;
+          top: 0.95rem;
+        }
+
+        p {
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  // Document typography and components.
+  .center > article,
+  article.popover-hint {
+    color: var(--nt-ink);
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: var(--nt-ink);
+      font-weight: 650;
+      letter-spacing: -0.018em;
+      line-height: 1.28;
+    }
+
+    h1 {
+      margin-top: 2.2rem;
+      font-size: 2rem;
+      font-weight: 720;
+    }
+
+    h2 {
+      margin-top: 2.35rem;
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid var(--nt-line);
+      font-size: 1.42rem;
+    }
+
+    h3 {
+      margin-top: 1.8rem;
+      font-size: 1.16rem;
+    }
+
+    p,
+    li {
+      line-height: 1.72;
+    }
+
+    strong,
+    b {
+      color: var(--nt-ink);
+      font-weight: 700;
+    }
+
+    mark {
+      margin-inline: 0.08em;
+      padding-inline: 0.12em;
+      border-radius: 2px;
+      background: var(--nt-yellow);
+      color: inherit;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    p a,
+    li a {
+      padding: 0;
+      border-radius: 2px;
+      background: transparent;
+      color: var(--nt-ink);
+      text-decoration: underline;
+      text-decoration-color: color-mix(in srgb, var(--nt-muted) 55%, transparent);
+      text-underline-offset: 3px;
+
+      &:hover {
+        background: var(--nt-hover);
+      }
+    }
+
+    p code,
+    li code {
+      padding: 0.12rem 0.36rem;
+      border-radius: 4px;
+      background: var(--nt-callout);
+      color: var(--nt-code-red);
+      font-size: 0.83em;
+    }
+
+    pre {
+      border: 1px solid var(--nt-line);
+      border-radius: 6px;
+      background: var(--nt-callout);
+      box-shadow: none;
+    }
+
+    table {
+      border: 1px solid var(--nt-line);
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th,
+    td {
+      padding: 0.5rem 0.7rem;
+      border: 1px solid var(--nt-line);
+      text-align: left;
+    }
+
+    th {
+      background: var(--nt-callout);
+      color: var(--nt-muted);
+      font-weight: 600;
+    }
+
+    blockquote {
+      margin-left: 0;
+      border-left: 3px solid var(--nt-ink);
+      background: transparent;
+      color: var(--nt-muted);
+    }
+
+    .callout {
+      border: none;
+      border-radius: 6px;
+      background: var(--nt-callout);
+      box-shadow: none;
+    }
+
+    input[type="checkbox"] {
+      accent-color: var(--nt-ink);
+    }
+
+    img {
+      border-radius: 3px;
+    }
+  }
+
+  &[data-slug="sop/index"] {
+    ul.section-ul {
+      margin-top: 1rem;
+      border-top: 1px solid var(--nt-line);
+    }
+
+    li.section-li {
+      margin: 0;
+      border-bottom: 1px solid var(--nt-line);
+
+      > .section {
+        padding: 0.58rem 0.45rem;
+        border-radius: 4px;
+
+        &:hover {
+          background: var(--nt-hover);
+        }
+
+        h3 {
+          margin: 0;
+          font-size: 0.93rem;
+          font-weight: 550;
+        }
+
+        .meta {
+          color: var(--nt-muted);
+          font-size: 0.76rem;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 800px) {
+    background: var(--nt-paper);
+
+    .sidebar.left {
+      border-bottom: 1px solid var(--nt-line);
+      background: var(--nt-shell);
+    }
+
+    .center {
+      padding-inline: 1rem;
+      background: var(--nt-paper);
+    }
+
+    &[data-slug="index"] .center::before {
+      height: 5.5rem;
+      margin-inline: -1rem;
+    }
+
+    &[data-slug="index"] [data-theme-slot="start-links"] {
+      grid-template-columns: 1fr !important;
+
+      li {
+        border-right: 0 !important;
+      }
+    }
+  }
+}

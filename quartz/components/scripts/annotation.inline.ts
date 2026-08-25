@@ -53,15 +53,10 @@ function normalizePageSlug(input: string): string {
   return slug || "index"
 }
 
-/** 等待 Supabase 客户端就绪 */
-async function waitForSupabase(maxWait: number = 15000): Promise<SupabaseClient | null> {
-  const w = window as any
-  const start = Date.now()
-  while (Date.now() - start < maxWait) {
-    if (w.supabaseClient) return w.supabaseClient
-    await new Promise((r) => setTimeout(r, 100))
-  }
-  return null
+/** 客户端由全局 prescript 本地打包并初始化。 */
+async function waitForSupabase(): Promise<SupabaseClient | null> {
+  return ((window as any).supabaseClientReady ??
+    Promise.resolve(null)) as Promise<SupabaseClient | null>
 }
 
 /** 清理函数集合 */

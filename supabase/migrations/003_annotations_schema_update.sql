@@ -94,9 +94,20 @@ END $$;
 ALTER TABLE annotations
   ALTER COLUMN user_id SET NOT NULL;
 
+ALTER TABLE annotations
+  ADD CONSTRAINT annotations_note_length
+  CHECK (note IS NULL OR char_length(note) <= 5000) NOT VALID;
+ALTER TABLE annotations VALIDATE CONSTRAINT annotations_note_length;
+
 -- ============================================
 -- 4) 删除旧列
 -- ============================================
+-- 必须先删除引用 author_id 的旧策略，否则 PostgreSQL 会拒绝删除该列。
+DROP POLICY IF EXISTS "成员可查看注释" ON annotations;
+DROP POLICY IF EXISTS "成员可创建注释" ON annotations;
+DROP POLICY IF EXISTS "作者可更新注释" ON annotations;
+DROP POLICY IF EXISTS "作者或管理员可删除注释" ON annotations;
+
 ALTER TABLE annotations
   DROP COLUMN IF EXISTS page_path,
   DROP COLUMN IF EXISTS paragraph_id,
@@ -116,11 +127,6 @@ CREATE INDEX idx_annotations_user ON annotations(user_id);
 -- ============================================
 -- 6) 更新 RLS 策略（author_id -> user_id）
 -- ============================================
-DROP POLICY IF EXISTS "成员可查看注释" ON annotations;
-DROP POLICY IF EXISTS "成员可创建注释" ON annotations;
-DROP POLICY IF EXISTS "作者可更新注释" ON annotations;
-DROP POLICY IF EXISTS "作者或管理员可删除注释" ON annotations;
-
 -- 已登录用户可查看所有注释
 CREATE POLICY "成员可查看注释" ON annotations
   FOR SELECT USING (auth.uid() IS NOT NULL);

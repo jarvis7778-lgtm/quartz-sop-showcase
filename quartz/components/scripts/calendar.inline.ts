@@ -58,15 +58,10 @@ async function init() {
     delete container.dataset.inited
   })
 
-  // 等待 Supabase 客户端就绪
+  // 客户端由全局 prescript 本地打包并初始化；无需轮询 Auth 组件。
   async function waitForSupabase(): Promise<SupabaseClient | null> {
-    const w = window as any
-    for (let i = 0; i < 200; i++) {
-      if (cleanup.stopped) return null
-      if (w.supabaseClient) return w.supabaseClient
-      await new Promise((r) => setTimeout(r, 100))
-    }
-    return null
+    const client = await (window as any).supabaseClientReady
+    return cleanup.stopped ? null : client
   }
 
   calContainer.innerHTML = '<div class="calendar-loading">加载中...</div>'
@@ -286,7 +281,11 @@ async function init() {
       state.currentUser = user
 
       if (user) {
-        const { data } = await client!.from("users").select("*").eq("id", user.id).single()
+        const { data } = await client!
+          .from("users")
+          .select("id, username, avatar_url, role")
+          .eq("id", user.id)
+          .single()
         state.currentUserDbRecord = data
         loginPrompt!.style.display = "none"
       } else {

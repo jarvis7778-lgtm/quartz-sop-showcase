@@ -75,6 +75,10 @@ DROP POLICY IF EXISTS "管理员可更新自己" ON users;
 CREATE POLICY "用户可查看所有成员" ON users
   FOR SELECT USING (auth.uid() IS NOT NULL);
 
+REVOKE SELECT ON users FROM anon, authenticated;
+GRANT SELECT (id, github_id, username, avatar_url, role, created_at, updated_at)
+  ON users TO authenticated;
+
 CREATE POLICY "用户可创建自己" ON users
   FOR INSERT WITH CHECK (id = auth.uid() AND role = 'member');
 

@@ -1,197 +1,216 @@
-import { Theme } from "../quartz/util/theme"
+// Theme registry, validation, and runtime-token plumbing.
+//
+// Each preset lives in its own directory under `themes/presets/<id>/`:
+//   - `theme.ts`   — a typed `ThemeManifest` (id, label, description, tokens)
+//   - `theme.scss` — the preset's structural CSS, scoped to
+//                    `body[data-theme-preset="<id>"]`
+//
+// Adding a normal (data + CSS only) theme requires an import, one registry entry,
+// and one SCSS @use in quartz/styles/custom.scss. Runtime tokens, the switcher,
+// font loading, and validation derive from the registry. See docs/themes.md.
+//
+// Why a hand-written registry instead of filesystem scanning: this module is
+// bundled by esbuild for the browser (via the switcher) and evaluated by the
+// Node build. A `import.meta.glob`-style scan is bundler-specific and not
+// portable across Quartz's esbuild config, so the smallest *stable* contract is
+// an explicit import list. The tradeoff (one extra import line per theme) is
+// documented and enforced by `validateThemeRegistry`.
 
-export type ThemePresetName = "current" | "notion" | "things" | "anuppuccin" | "bluetopaz"
+import type { FontSpecification, Theme } from "../quartz/util/theme"
+import { colorVarsBlock, fontVarsBlock, formatFontSpecification } from "../quartz/util/theme"
+import { ThemeManifest } from "./types"
 
-const current: Theme = {
-  fontOrigin: "googleFonts",
-  cdnCaching: true,
-  typography: {
-    header: "Sora",
-    body: "Manrope",
-    code: "Space Mono",
-  },
-  colors: {
-    lightMode: {
-      light: "#fdf7f2",
-      lightgray: "#f0e3da",
-      gray: "#b89a8a",
-      darkgray: "#4a3a36",
-      dark: "#1a1012",
-      secondary: "#e84a5f",
-      tertiary: "#ff8c42",
-      highlight: "rgba(232,74,95,0.07)",
-      textHighlight: "#ffb86c66",
-    },
-    darkMode: {
-      light: "#150f12",
-      lightgray: "#2c1e23",
-      gray: "#7a5d5a",
-      darkgray: "#e0cdc6",
-      dark: "#fbeee8",
-      secondary: "#ff6b81",
-      tertiary: "#ffa15c",
-      highlight: "rgba(255,107,129,0.1)",
-      textHighlight: "#ff8c4244",
-    },
-  },
-}
+import current from "./presets/current/theme"
+import notion from "./presets/notion/theme"
+import things from "./presets/things/theme"
+import anuppuccin from "./presets/anuppuccin/theme"
+import bluetopaz from "./presets/bluetopaz/theme"
+import carbon from "./presets/carbon/theme"
+import nocturne from "./presets/nocturne/theme"
+import fieldnotes from "./presets/fieldnotes/theme"
 
-// notion — Notion public pages. Real Notion values: graphite ink #37352f,
-// link blue #337ea9, accent orange #d9730d, warm hairlines, #191919 dark canvas.
-const notion: Theme = {
-  fontOrigin: "googleFonts",
-  cdnCaching: true,
-  typography: {
-    header: "Inter",
-    body: "Inter",
-    code: "JetBrains Mono",
-  },
-  colors: {
-    lightMode: {
-      light: "#ffffff",
-      lightgray: "#ebeae8",
-      gray: "#9b9a97",
-      darkgray: "#57534e",
-      dark: "#37352f",
-      secondary: "#337ea9",
-      tertiary: "#d9730d",
-      highlight: "rgba(51, 126, 169, 0.08)",
-      textHighlight: "#fdecc8aa",
-    },
-    darkMode: {
-      light: "#191919",
-      lightgray: "#2e2e2e",
-      gray: "#7f7f7f",
-      darkgray: "#d3d1cb",
-      dark: "#ececec",
-      secondary: "#529cca",
-      tertiary: "#e2984a",
-      highlight: "rgba(82, 156, 202, 0.12)",
-      textHighlight: "#89632a66",
-    },
-  },
-}
+export type { ThemeManifest } from "./types"
 
-// things — Things 3 (Cultured Code). Crisp white, friendly iOS blue #2e80f2,
-// soft fills and generous radii instead of borders. Airy and approachable.
-// tertiary doubles as the global link-hover color, so it stays in the blue family.
-const things: Theme = {
-  fontOrigin: "googleFonts",
-  cdnCaching: true,
-  typography: {
-    header: "Plus Jakarta Sans",
-    body: "Inter",
-    code: "JetBrains Mono",
-  },
-  colors: {
-    lightMode: {
-      light: "#ffffff",
-      lightgray: "#e9ecef",
-      gray: "#97a1ab",
-      darkgray: "#43484d",
-      dark: "#1f2328",
-      secondary: "#2e80f2",
-      tertiary: "#1b6ad6",
-      highlight: "rgba(46, 128, 242, 0.08)",
-      textHighlight: "#ffe98a99",
-    },
-    darkMode: {
-      light: "#17191e",
-      lightgray: "#2a2d33",
-      gray: "#6d7680",
-      darkgray: "#c8cdd2",
-      dark: "#f2f4f6",
-      secondary: "#4b96f8",
-      tertiary: "#7cb3fa",
-      highlight: "rgba(75, 150, 248, 0.12)",
-      textHighlight: "#ffd60a3d",
-    },
-  },
-}
-
-// anuppuccin — AnuPpuccin / Catppuccin. Light = Latte, dark = Mocha (real palette
-// values). Mauve accent, pink secondary accent; per-level heading tints live in
-// the preset's SCSS block.
-const anuppuccin: Theme = {
-  fontOrigin: "googleFonts",
-  cdnCaching: true,
-  typography: {
-    header: "Nunito",
-    body: "Nunito Sans",
-    code: "Fira Code",
-  },
-  colors: {
-    lightMode: {
-      light: "#eff1f5", // latte base
-      lightgray: "#dce0e8", // latte crust
-      gray: "#8c8fa1", // latte overlay1
-      darkgray: "#5c5f77", // latte subtext1
-      dark: "#4c4f69", // latte text
-      secondary: "#8839ef", // latte mauve
-      tertiary: "#ea76cb", // latte pink
-      highlight: "rgba(136, 57, 239, 0.07)",
-      textHighlight: "#df8e1d4d", // latte yellow
-    },
-    darkMode: {
-      light: "#1e1e2e", // mocha base
-      lightgray: "#313244", // mocha surface0
-      gray: "#6c7086", // mocha overlay0
-      darkgray: "#bac2de", // mocha subtext1
-      dark: "#cdd6f4", // mocha text
-      secondary: "#cba6f7", // mocha mauve
-      tertiary: "#f5c2e7", // mocha pink
-      highlight: "rgba(203, 166, 247, 0.1)",
-      textHighlight: "#f9e2af40", // mocha yellow
-    },
-  },
-}
-
-// bluetopaz — Blue Topaz. Scholarly paper-and-ink: warm paper ground, topaz
-// blue, cinnabar seal-red hover (a deliberate scholarly touch). Serif headers.
-// Noto SC fonts have no italic axis on Google Fonts — includeItalic must stay
-// false for the body font or the whole css2 request 404s and all fonts fall back.
-const bluetopaz: Theme = {
-  fontOrigin: "googleFonts",
-  cdnCaching: true,
-  typography: {
-    header: { name: "Noto Serif SC", weights: [400, 500, 700] },
-    body: { name: "Noto Sans SC", weights: [400, 500, 700], includeItalic: false },
-    code: "JetBrains Mono",
-  },
-  colors: {
-    lightMode: {
-      light: "#faf7f0",
-      lightgray: "#e7dfd1",
-      gray: "#a29a87",
-      darkgray: "#4d4737",
-      dark: "#2c2a24",
-      secondary: "#2f6fa7",
-      tertiary: "#b0562f",
-      highlight: "rgba(47, 111, 167, 0.08)",
-      textHighlight: "#e8c47a66",
-    },
-    darkMode: {
-      light: "#1b2027",
-      lightgray: "#2e3642",
-      gray: "#7d8695",
-      darkgray: "#c9c4b4",
-      dark: "#f0ebdd",
-      secondary: "#6ea3d8",
-      tertiary: "#d98a63",
-      highlight: "rgba(110, 163, 216, 0.12)",
-      textHighlight: "#d9a05f40",
-    },
-  },
-}
-
-const presets: Record<ThemePresetName, Theme> = {
+/**
+ * The ordered list of all shipped theme manifests. The first entry is the
+ * conventional build default (overridable in `site.theme.ts`). Order determines
+ * the runtime switcher menu order.
+ *
+ * To add a theme: add an `import`, then append it here. That's it.
+ */
+export const themeRegistry = [
   current,
   notion,
   things,
   anuppuccin,
   bluetopaz,
+  carbon,
+  nocturne,
+  fieldnotes,
+] as const satisfies readonly ThemeManifest[]
+
+/** Union derived from the registry; adding a manifest needs no type edit. */
+export type ThemePresetName = (typeof themeRegistry)[number]["id"]
+
+/** All registered preset ids, in registry order. */
+export const themePresetNames: ThemePresetName[] = themeRegistry.map((m) => m.id)
+
+/** The build default preset id — the first registry entry. */
+export const defaultThemePreset: ThemePresetName = themeRegistry[0].id
+
+const byId = new Map<string, ThemeManifest>(themeRegistry.map((m) => [m.id, m]))
+
+/** Look up a manifest by id. Returns `undefined` for unknown ids. */
+export function getThemeManifest(id: string): ThemeManifest | undefined {
+  return byId.get(id)
 }
 
-export function createThemePreset(name: ThemePresetName): Theme {
-  return presets[name]
+/**
+ * Back-compat: return the raw `Theme` (color + typography tokens) for a preset.
+ * Used by `quartz.config.ts` to pick the build-default theme. Falls back to the
+ * Unknown ids fail closed so the theme tokens and data-theme-preset attribute
+ * can never describe different presets.
+ */
+export function createThemePreset(name: string): Theme {
+  const manifest = byId.get(name)
+  if (!manifest) {
+    throw new Error(`Unknown theme preset: ${name}`)
+  }
+  return manifest.theme
+}
+
+const CSS_SAFE_ID = /^[a-z][a-z0-9-]*$/
+const REQUIRED_COLOR_TOKENS = [
+  "light",
+  "lightgray",
+  "gray",
+  "darkgray",
+  "dark",
+  "secondary",
+  "tertiary",
+  "highlight",
+  "textHighlight",
+] as const
+
+/**
+ * Validate a set of manifests against the theme contract. Returns a list of
+ * human-readable problem strings (empty === valid). Used by the test suite and
+ * the test suite; does not throw.
+ */
+export function validateThemeRegistry(registry: readonly ThemeManifest[]): string[] {
+  const problems: string[] = []
+  const seen = new Set<string>()
+
+  for (const m of registry) {
+    if (!m || typeof m.id !== "string" || m.id.length === 0) {
+      problems.push(`manifest with missing id: ${JSON.stringify(m?.id)}`)
+      continue
+    }
+    if (!CSS_SAFE_ID.test(m.id)) {
+      problems.push(`id "${m.id}" is not CSS-safe (need /^[a-z][a-z0-9-]*$/)`)
+    }
+    if (seen.has(m.id)) {
+      problems.push(`duplicate id "${m.id}"`)
+    }
+    seen.add(m.id)
+
+    if (!m.label) problems.push(`"${m.id}" is missing a label`)
+    if (!m.description) problems.push(`"${m.id}" is missing a description`)
+    if (!m.theme?.colors) {
+      problems.push(`"${m.id}" is missing theme.colors`)
+      continue
+    }
+    for (const mode of ["lightMode", "darkMode"] as const) {
+      const scheme = m.theme.colors[mode] as unknown as Record<string, string> | undefined
+      if (!scheme) {
+        problems.push(`"${m.id}" is missing colors.${mode}`)
+        continue
+      }
+      for (const token of REQUIRED_COLOR_TOKENS) {
+        if (typeof scheme[token] !== "string" || scheme[token].length === 0) {
+          problems.push(`"${m.id}".${mode} is missing required token "${token}"`)
+        }
+      }
+    }
+    if (!m.theme.typography?.header) problems.push(`"${m.id}" is missing typography.header`)
+  }
+
+  return problems
+}
+
+/**
+ * Emit CSS custom-property blocks for every preset, scoped to
+ * `body[data-theme-preset="<id>"]` (light mode) and paired with
+ * `:root[saved-theme="dark"]` (dark mode). A single build ships these blocks for
+ * ALL presets, which is what makes runtime hot-switching possible without a
+ * rebuild: flipping `body.dataset.themePreset` re-points every `var(--…)`.
+ *
+ * Each block is ALSO scoped to `html[data-theme-preset="<id>"]` so the pre-paint
+ * restore script — which runs in `<head>` before `<body>` exists and can only
+ * touch `document.documentElement` — takes effect on the very first frame,
+ * avoiding a flash of the build-default palette.
+ *
+ * The `:root` block written by `joinStyles` remains the build default and wins
+ * before the switcher runs; these element-scoped blocks have higher specificity
+ * so a selected preset overrides the default.
+ */
+export function buildAllPresetTokens(registry: readonly ThemeManifest[]): string {
+  const blocks: string[] = []
+  for (const { id, theme } of registry) {
+    blocks.push(`html[data-theme-preset="${id}"],
+body[data-theme-preset="${id}"] {
+${colorVarsBlock(theme.colors.lightMode)}
+
+${fontVarsBlock(theme)}
+}`)
+    blocks.push(`:root[saved-theme="dark"][data-theme-preset="${id}"],
+:root[saved-theme="dark"] body[data-theme-preset="${id}"] {
+${colorVarsBlock(theme.colors.darkMode)}
+}`)
+  }
+  return blocks.join("\n\n")
+}
+
+/**
+ * A single deduplicated Google Fonts css2 request covering every font family
+ * used by any preset. This lets one build carry the fonts for all presets so
+ * switching never needs a network round-trip for a font that was already loaded.
+ *
+ * Performance tradeoff: one combined request is larger than a single-theme
+ * request (all ~15 families vs. 3). We de-duplicate families so shared fonts
+ * (e.g. Inter, IBM Plex Mono) are requested once. For a site that pins one
+ * preset and never exposes the switcher, `googleFontHref(theme)` is lighter — but
+ * the whole point of this template is runtime switching, so we opt into the
+ * combined request.
+ */
+export function allPresetsGoogleFontHref(registry: readonly ThemeManifest[]): string {
+  const families = new Map<string, { weights: Set<number>; italic: boolean }>()
+  const add = (role: "title" | "header" | "body" | "code", raw: FontSpecification) => {
+    const spec = typeof raw === "string" ? { name: raw } : raw
+    const defaultWeights = role === "header" ? [400, 700] : [400, 600]
+    const entry = families.get(spec.name) ?? { weights: new Set<number>(), italic: false }
+    for (const weight of spec.weights ?? defaultWeights) entry.weights.add(weight)
+    entry.italic ||= spec.includeItalic ?? role === "body"
+    families.set(spec.name, entry)
+  }
+
+  for (const { theme } of registry) {
+    if (theme.fontOrigin !== "googleFonts") continue
+    if (theme.typography.title) add("title", theme.typography.title)
+    add("header", theme.typography.header)
+    add("body", theme.typography.body)
+    add("code", theme.typography.code)
+  }
+
+  const query = [...families.entries()]
+    .map(([name, data]) =>
+      formatFontSpecification("body", {
+        name,
+        weights: [...data.weights].sort((a, b) => a - b),
+        includeItalic: data.italic,
+      }),
+    )
+    .map((family) => `family=${family}`)
+    .join("&")
+  return `https://fonts.googleapis.com/css2?${query}&display=swap`
 }

@@ -157,7 +157,7 @@ function createCard(ann: Annotation): HTMLElement {
     <div class="ann-card-quote">${escapeHtml(truncatedQuote)}</div>
     <div class="ann-card-note-display">${note ? escapeHtml(note) : '<span class="ann-card-note-empty">无批注说明</span>'}</div>
     <div class="ann-card-note-edit" style="display:none;">
-      <textarea class="ann-card-edit-input" rows="3">${escapeHtml(note)}</textarea>
+      <textarea class="ann-card-edit-input" maxlength="5000" rows="3">${escapeHtml(note)}</textarea>
       <div class="ann-card-edit-actions">
         <button class="ann-card-edit-cancel" type="button">取消</button>
         <button class="ann-card-edit-save" type="button">保存</button>

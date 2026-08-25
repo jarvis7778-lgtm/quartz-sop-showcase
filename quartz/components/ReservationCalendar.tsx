@@ -37,11 +37,11 @@ export default ((userOpts?: ReservationCalendarOptions) => {
         <div class="calendar-header">
           <h2 class="calendar-title">{opts.title}</h2>
           <div class="calendar-controls">
-            <button id="cal-prev" class="cal-nav-btn">
+            <button id="cal-prev" class="cal-nav-btn" aria-label="上一时间段">
               ◀
             </button>
             <span id="cal-current-range" class="cal-current-range"></span>
-            <button id="cal-next" class="cal-nav-btn">
+            <button id="cal-next" class="cal-nav-btn" aria-label="下一时间段">
               ▶
             </button>
             <button id="cal-today" class="cal-today-btn">
@@ -66,18 +66,31 @@ export default ((userOpts?: ReservationCalendarOptions) => {
         </div>
 
         {/* 新建/编辑预约弹窗 */}
-        <div id="reservation-modal" class="reservation-modal" style={{ display: "none" }}>
+        <div
+          id="reservation-modal"
+          class="reservation-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          style={{ display: "none" }}
+        >
           <div class="modal-overlay"></div>
           <div class="modal-content">
             <h3 id="modal-title">新建预约</h3>
             <p id="modal-meta" class="modal-meta" style={{ display: "none" }}></p>
             <form id="reservation-form">
               <div class="form-group">
-                <label>Title</label>
-                <input type="text" id="res-title" required placeholder="e.g. Team review session" />
+                <label for="res-title">Title</label>
+                <input
+                  type="text"
+                  id="res-title"
+                  maxlength={200}
+                  required
+                  placeholder="e.g. Team review session"
+                />
               </div>
               <div class="form-group">
-                <label>Resource (optional)</label>
+                <label for="res-equipment">Resource (optional)</label>
                 <input
                   type="text"
                   id="res-equipment"
@@ -85,52 +98,69 @@ export default ((userOpts?: ReservationCalendarOptions) => {
                 />
               </div>
               <div class="form-group">
-                <label>描述 (可选)</label>
-                <textarea id="res-description" rows={2} placeholder="补充说明..."></textarea>
+                <label for="res-description">描述 (可选)</label>
+                <textarea
+                  id="res-description"
+                  maxlength={2000}
+                  rows={2}
+                  placeholder="补充说明..."
+                ></textarea>
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <label>开始时间</label>
+                  <label for="res-start">开始时间</label>
                   <input type="datetime-local" id="res-start" required />
                 </div>
                 <div class="form-group">
-                  <label>结束时间</label>
+                  <label for="res-end">结束时间</label>
                   <input type="datetime-local" id="res-end" required />
                 </div>
               </div>
               <div class="form-group">
-                <label>颜色</label>
+                <label id="res-color-label">颜色</label>
                 <div class="color-picker" id="color-picker">
-                  <span
+                  <button
+                    type="button"
                     class="color-option selected"
                     data-color="#3788d8"
                     style={{ background: "#3788d8" }}
-                  ></span>
-                  <span
+                    aria-label="蓝色"
+                  ></button>
+                  <button
+                    type="button"
                     class="color-option"
                     data-color="#28a745"
                     style={{ background: "#28a745" }}
-                  ></span>
-                  <span
+                    aria-label="绿色"
+                  ></button>
+                  <button
+                    type="button"
                     class="color-option"
                     data-color="#dc3545"
                     style={{ background: "#dc3545" }}
-                  ></span>
-                  <span
+                    aria-label="红色"
+                  ></button>
+                  <button
+                    type="button"
                     class="color-option"
                     data-color="#ffc107"
                     style={{ background: "#ffc107" }}
-                  ></span>
-                  <span
+                    aria-label="黄色"
+                  ></button>
+                  <button
+                    type="button"
                     class="color-option"
                     data-color="#6f42c1"
                     style={{ background: "#6f42c1" }}
-                  ></span>
-                  <span
+                    aria-label="紫色"
+                  ></button>
+                  <button
+                    type="button"
                     class="color-option"
                     data-color="#fd7e14"
                     style={{ background: "#fd7e14" }}
-                  ></span>
+                    aria-label="橙色"
+                  ></button>
                 </div>
               </div>
               <div class="modal-actions">

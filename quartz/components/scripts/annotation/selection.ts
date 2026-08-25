@@ -63,7 +63,7 @@ export function initSelection(
     notePopup.className = "ann-note-popup"
     notePopup.innerHTML = `
       <div class="ann-note-popup-inner">
-        <textarea class="ann-note-input" placeholder="添加批注说明（可选）..." rows="3"></textarea>
+        <textarea class="ann-note-input" maxlength="5000" placeholder="添加批注说明（可选）..." rows="3"></textarea>
         <div class="ann-note-actions">
           <button class="ann-note-cancel" type="button">取消</button>
           <button class="ann-note-save" type="button">保存</button>

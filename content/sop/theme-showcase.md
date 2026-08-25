@@ -1,14 +1,15 @@
 ---
-title: Theme Showcase
+title: Eight-theme Showcase
 tags:
   - reference
 ---
 
-# Theme Showcase
+# Eight-theme Showcase
 
 This page is a visual stress test. It exercises every common Markdown element so you can
-evaluate a theme's typography, spacing, color, and component styling at a glance. Switch the
-preset in `site.theme.ts` and rebuild to compare **current**, **minimal**, and **notion**.
+evaluate typography, spacing, color, and component styling at a glance. Use the runtime Theme
+menu to compare **current**, **notion**, **things**, **anuppuccin**, **bluetopaz**, **carbon**,
+**nocturne**, and **fieldnotes** without rebuilding.
 
 ## Heading hierarchy
 
@@ -83,9 +84,9 @@ clear contrast and a readable monospace face:
 ```ts
 import { ThemePresetName } from "./themes"
 
-// Switch the active theme preset here, then rebuild.
-export const siteTheme = {
-  preset: "minimal" as ThemePresetName,
+// Choose the first-visit preset; visitors can still switch at runtime.
+export const siteTheme: { preset: ThemePresetName } = {
+  preset: "fieldnotes",
 }
 ```
 
@@ -121,10 +122,13 @@ $$
 
 ## Figure
 
-A figure-style section: an image with a caption. The placeholder below should scale to the
-content width with appropriate spacing and a readable caption.
+A figure-style section: a Mermaid flow with a caption. It should scale to the content width
+with appropriate spacing and readable labels.
 
-![Placeholder diagram of an onboarding flow](https://placehold.co/960x420/png?text=Onboarding+Flow+Diagram)
+```mermaid
+flowchart LR
+  Draft --> Review --> Approved --> Published
+```
 
 _Figure 1 — Replace this placeholder with a real diagram once private details are removed._
 

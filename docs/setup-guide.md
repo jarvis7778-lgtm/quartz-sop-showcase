@@ -1,164 +1,97 @@
-# Setup Guide
+# Setup and deployment guide
 
-This guide explains how to turn this template into your own SOP or team knowledge-base website.
-
-The project defaults to **Static Mode**, which does not require Supabase or any database. Complete the Supabase and GitHub OAuth sections only if you want **Collab Mode** with login, comments, annotations, and reservations. See `docs/modes.md` for the mode switch.
-
-## Checklist
-
-- [ ] Choose a repository name and site title
-- [ ] Create a GitHub repository or organization
-- [ ] Create a Supabase project
-- [ ] Run the database migration
-- [ ] Configure GitHub OAuth in Supabase
-- [ ] Deploy the static site
-- [ ] Optional: protect the full site with Cloudflare Access
-
----
-
-## 1. GitHub Repository or Organization
-
-You can use a personal repository or a GitHub organization.
-
-Suggested placeholders to replace:
-
-```text
-GitHub organization: <your-github-org>
-Repository name:     <your-repo-name>
-Site URL:            https://<your-site>.pages.dev
-```
-
-If you use GitHub organization membership as an access-control rule, invite all allowed users to that organization or to a specific team.
-
----
-
-## 2. Supabase Project
-
-1. Open <https://supabase.com>.
-2. Sign in and create a new project.
-3. Choose the Free plan if it is enough for your team.
-4. After the project is ready, open **Project Settings → API**.
-5. Record only the public frontend values:
-
-```text
-SUPABASE_URL=        https://xxxxxx.supabase.co
-SUPABASE_ANON_KEY=   eyJ...
-```
-
-Never commit or share these sensitive values:
-
-- Database password
-- `service_role` key
-- GitHub OAuth Client Secret
-
-### Run the database schema
-
-Open the Supabase SQL editor and run:
-
-```text
-supabase/migrations/001_initial_schema.sql
-```
-
-This creates:
-
-- `users`
-- `annotations`
-- `comments`
-- `comment_likes`
-- `reservations`
-- RLS policies
-- an `auth.users` trigger that syncs OAuth users into `public.users`
-
----
-
-## 3. GitHub OAuth
-
-### Create the OAuth App
-
-1. Open <https://github.com/settings/developers>.
-2. Choose **OAuth Apps → New OAuth App**.
-3. Fill in:
-   - **Application name**: `SOP Knowledge Base`
-   - **Homepage URL**: `https://<your-site>.pages.dev`
-   - **Authorization callback URL**: `https://<your-supabase-project>.supabase.co/auth/v1/callback`
-4. Register the app.
-5. Copy the Client ID and generate a Client Secret.
-
-### Enable the GitHub provider in Supabase
-
-1. Open Supabase Dashboard.
-2. Go to **Authentication → Providers → GitHub**.
-3. Enable GitHub.
-4. Paste the GitHub OAuth Client ID and Client Secret.
-5. Save.
-
----
-
-## 4. Local Development
+## 1. Local verification
 
 ```bash
 npm install
-export SUPABASE_URL="https://your-project.supabase.co"
-export SUPABASE_ANON_KEY="your-anon-key"
-npm run dev
+npm run check
+npm test
+SITE_MODE=static npx quartz build
 ```
 
-Open <http://localhost:8081>.
+Node.js 22+ and npm 10.9+ are required.
 
-Without the two Supabase variables, the site still builds but login, comments, annotations, and reservations are inactive.
+## 2. Configure public URLs
 
----
+Set `SITE_URL` during builds:
 
-## 5. Cloudflare Pages Deployment
+```bash
+SITE_URL=docs.example.com npx quartz build
+```
 
-1. Push this repository to GitHub.
-2. Create a Cloudflare Pages project from the repository.
-3. Use:
+Do not include a path. If omitted, canonical and absolute social URLs are omitted rather than generated from a placeholder domain.
+
+## 3. Static deployment
+
+For Cloudflare Pages or EdgeOne Pages:
 
 ```text
-Build command:   npx quartz build
-Output folder:   public
-Node version:    22 or newer
+Build command: npx quartz build
+Output: public
+Node: 22
+Environment: SITE_MODE=static, SITE_URL=<final host>
 ```
 
-4. Add environment variables:
+Cloudflare-compatible hosts copy `quartz/static/_headers` into the output. Verify the headers on the final hostname.
+
+GitHub Pages uses `.github/workflows/pages.yaml` and is disabled until repository variable `ENABLE_GITHUB_PAGES=true` is set.
+
+## 4. Collab deployment
+
+Create a Supabase project and apply every migration in numeric order:
 
 ```text
-SUPABASE_URL
-SUPABASE_ANON_KEY
+001_initial_schema.sql
+002_user_sync_and_rls_patch.sql
+003_annotations_schema_update.sql
+004_security_and_content_constraints.sql
 ```
 
-5. Deploy.
+Configure GitHub OAuth in Supabase, including the final callback URLs. Then build with:
 
----
+```bash
+SITE_MODE=collab \
+SITE_URL=docs.example.com \
+SUPABASE_URL=https://your-project.supabase.co \
+SUPABASE_ANON_KEY=your-public-anon-key \
+npx quartz build
+```
 
-## 6. Optional Full-Site Access Control
+Never expose a service-role key. The anon key is public; RLS is the security boundary.
 
-Quartz is a static site. Frontend-only code cannot truly hide private pages. If the whole website must be private, put access control in front of the site.
+### Existing databases
 
-A simple option is Cloudflare Zero Trust Access:
+Back up first, then apply only migrations newer than those already applied. Migration `004` changes View execution, revokes anonymous View access, hides member email from browser roles and adds content constraints.
 
-1. Open Cloudflare Zero Trust.
-2. Go to **Access → Applications → Add an application**.
-3. Choose **Self-hosted**.
-4. Set the application domain, for example `https://<your-site>.pages.dev` or your custom domain.
-5. Enable GitHub as an identity provider.
-6. Add an **Allow** policy:
-   - Include: GitHub Organization or GitHub Team = `<your-github-org>`
-   - Action: Allow
-7. Optional deny fallback:
-   - Include: Everyone
-   - Action: Deny
+### Required production probes
 
-After this, unauthorized visitors are blocked before the static pages load.
+Use direct Data API calls to verify:
 
----
+- anonymous users cannot read collaboration Views or tables;
+- members cannot read `users.email`;
+- members can only mutate their own comments/annotations/reservations;
+- ordinary users cannot promote themselves to admin;
+- administrator delete policies work as intended.
 
-## 7. Privacy Checklist
+If any result is uncertain, do not expose Collab Mode publicly.
 
-Before publishing your fork or template:
+## 5. Mainland/offline checklist
 
-- Remove real SOP content.
-- Remove private screenshots and generated build output.
-- Search for organization names, personal names, private domains, emails, and tokens.
-- Do not commit `.env`, `node_modules/`, `public/`, `.obsidian/`, vector databases, or tool caches.
+Supabase JS is bundled locally and each theme loads only its own font stylesheet. A strict mainland/offline build still needs:
+
+- self-hosted theme fonts and their license files;
+- replacement of any third-party images in your own content;
+- a mainland-appropriate database/backend if Supabase latency or availability is unacceptable.
+
+Do not advertise “fully mainland/offline ready” until a built-site external-host scan returns only approved origins.
+
+## 6. Upgrades
+
+Configure the product update remote explicitly:
+
+```bash
+git remote add cfour <YOUR-CFOUR-REPOSITORY-URL>
+npx quartz update
+```
+
+Review the resulting diff and rerun both mode builds. Quartz upstream changes are not pulled automatically; test them as a separate maintenance task.

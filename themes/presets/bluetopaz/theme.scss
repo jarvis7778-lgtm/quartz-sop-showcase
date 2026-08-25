@@ -1,0 +1,335 @@
+body[data-theme-preset="bluetopaz"] {
+  --bt-paper: #fffdf8;
+  --bt-cinnabar: #b0562f;
+  --bt-rule: color-mix(in srgb, var(--secondary) 55%, transparent);
+  :root[saved-theme="dark"] & {
+    --bt-paper: #212832;
+    --bt-cinnabar: #d98a63;
+  }
+
+  // --- Shell ---
+  .sidebar.left .page-title {
+    font-family: var(--headerFont);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  // --- Homepage: a book's title page ---
+  &[data-slug="index"] {
+    .center > .popover-hint > article,
+    .center > article {
+      & > [data-theme-slot="hero"] {
+        font-family: var(--headerFont);
+        font-size: 2.2rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        line-height: 1.3;
+        text-align: center;
+        color: var(--dark);
+        margin: 2rem auto 0;
+        padding: 2.2rem 2rem 0.8rem;
+        border: none;
+        border-top: 3px double var(--secondary);
+        position: relative;
+        &::after {
+          content: "❦";
+          display: block;
+          font-size: 1rem;
+          color: var(--bt-cinnabar);
+          margin-top: 0.9rem;
+        }
+      }
+      & > [data-theme-slot="intro"] {
+        font-size: 1rem;
+        line-height: 1.85;
+        color: var(--darkgray);
+        text-align: center;
+        max-width: 34rem;
+        margin: 0 auto 2.2rem;
+        padding-bottom: 2rem;
+        border-bottom: 3px double var(--secondary);
+      }
+      & > [data-theme-slot="section-heading"] {
+        font-family: var(--headerFont);
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-align: center;
+        color: var(--bt-cinnabar);
+        border: none;
+        margin-top: 2.6rem;
+        margin-bottom: 1.1rem;
+        // flanking rules — colophon style
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        &::before,
+        &::after {
+          content: "";
+          flex: 1;
+          height: 1px;
+          background: var(--lightgray);
+        }
+      }
+      // plain list: classical enumeration
+      & > [data-theme-slot="feature-list"] {
+        list-style: none;
+        padding-left: 0;
+        max-width: 34rem;
+        margin-left: auto;
+        margin-right: auto;
+        counter-reset: bt-item;
+        li {
+          padding: 0.42rem 0 0.42rem 2.2rem;
+          position: relative;
+          line-height: 1.7;
+          border-bottom: 1px dashed var(--lightgray);
+          &:last-child {
+            border-bottom: none;
+          }
+          &::before {
+            counter-increment: bt-item;
+            content: counter(bt-item, cjk-ideographic) "、";
+            position: absolute;
+            left: 0.2rem;
+            font-family: var(--headerFont);
+            color: var(--secondary);
+            font-weight: 500;
+          }
+        }
+      }
+      // link lists: index cards with topaz top rule
+      & > [data-theme-slot="start-links"] {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        li {
+          margin: 0;
+        }
+        a.internal {
+          display: block;
+          padding: 1.05rem 1.15rem;
+          border: 1px solid var(--lightgray);
+          border-top: 2px solid var(--secondary);
+          border-radius: 2px;
+          background: var(--bt-paper);
+          color: var(--dark);
+          font-family: var(--headerFont);
+          font-weight: 500;
+          font-size: 0.95rem;
+          line-height: 1.5;
+          transition:
+            border-color 150ms ease,
+            background 150ms ease;
+          &:hover {
+            border-color: var(--bt-cinnabar);
+            border-top-width: 2px;
+            color: var(--bt-cinnabar);
+            background: var(--light);
+          }
+        }
+        @media (max-width: 800px) {
+          grid-template-columns: 1fr;
+        }
+      }
+      & > [data-theme-slot="notice"] {
+        border: 1px solid var(--lightgray);
+        border-left: 3px solid var(--bt-cinnabar);
+        border-radius: 2px;
+        background: var(--bt-paper);
+        color: var(--darkgray);
+        margin: 2.4rem 0 0;
+        padding: 0.9rem 1.2rem;
+        font-size: 0.92rem;
+        p {
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  // --- SOP library: a chapter index ---
+  &[data-slug="sop/index"] {
+    ul.section-ul {
+      margin-top: 1.2rem;
+      counter-reset: bt-chapter;
+    }
+    li.section-li {
+      margin: 0;
+      border-bottom: 1px solid var(--lightgray);
+      &:first-child {
+        border-top: 2px solid var(--secondary);
+      }
+      & > .section {
+        padding: 0.65rem 0.3rem;
+        h3 {
+          font-family: var(--headerFont);
+          font-size: 1rem;
+          font-weight: 500;
+          margin: 0;
+          a {
+            background: transparent;
+            &::before {
+              counter-increment: bt-chapter;
+              content: counter(bt-chapter, decimal-leading-zero);
+              font-family: var(--codeFont);
+              font-size: 0.8rem;
+              color: var(--bt-cinnabar);
+              margin-right: 0.7rem;
+            }
+          }
+        }
+        .meta {
+          font-size: 0.8rem;
+          opacity: 0.55;
+        }
+      }
+    }
+  }
+
+  // --- Article: scholarly print typography ---
+  .center > article,
+  article.popover-hint {
+    & h1,
+    & h2,
+    & h3,
+    & h4,
+    & h5,
+    & h6 {
+      font-family: var(--headerFont);
+      color: var(--dark);
+      font-weight: 700;
+      line-height: 1.4;
+    }
+    & h1 {
+      font-size: 1.8rem;
+      margin-top: 2.4rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 3px double var(--secondary);
+    }
+    & h2 {
+      font-size: 1.4rem;
+      color: var(--secondary);
+      margin-top: 2.1rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid var(--lightgray);
+    }
+    & h3 {
+      font-size: 1.18rem;
+      margin-top: 1.7rem;
+      &::before {
+        content: "§";
+        color: var(--bt-cinnabar);
+        margin-right: 0.45rem;
+        font-weight: 400;
+      }
+    }
+    & h4,
+    & h5,
+    & h6 {
+      font-size: 1rem;
+      margin-top: 1.5rem;
+      color: var(--darkgray);
+    }
+
+    & p,
+    & li {
+      line-height: 1.85;
+    }
+
+    & strong,
+    & b {
+      color: var(--bt-cinnabar);
+      font-weight: 700;
+    }
+    & em,
+    & i {
+      color: var(--secondary);
+    }
+
+    & p a,
+    & li a {
+      color: var(--secondary);
+      background: transparent;
+      padding: 0;
+      text-decoration: underline;
+      text-decoration-color: var(--bt-rule);
+      text-underline-offset: 4px;
+      text-decoration-thickness: 1px;
+      &:hover {
+        color: var(--bt-cinnabar);
+        text-decoration-color: var(--bt-cinnabar);
+      }
+    }
+
+    & p code,
+    & li code {
+      background: color-mix(in srgb, var(--lightgray) 50%, var(--light));
+      color: var(--bt-cinnabar);
+      border: 1px solid var(--lightgray);
+      border-radius: 3px;
+      padding: 0.08rem 0.34rem;
+      font-size: 0.84em;
+    }
+
+    & pre {
+      border: 1px solid var(--lightgray);
+      border-radius: 3px;
+      background: var(--bt-paper);
+    }
+
+    // tables: printed ruled table — heavy top/bottom rules (三线表)
+    & table {
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      border-top: 2px solid var(--dark);
+      border-bottom: 2px solid var(--dark);
+    }
+    & th {
+      text-align: left;
+      font-family: var(--headerFont);
+      font-weight: 700;
+      color: var(--dark);
+      border-bottom: 1px solid var(--dark);
+      padding: 0.5rem 0.85rem;
+    }
+    & td {
+      border: none;
+      padding: 0.5rem 0.85rem;
+    }
+
+    & blockquote {
+      border: none;
+      border-left: 3px solid var(--secondary);
+      background: var(--bt-paper);
+      margin-left: 0;
+      padding: 0.7rem 1.2rem;
+      color: var(--darkgray);
+      font-style: normal;
+    }
+    & .callout {
+      border: 1px solid var(--lightgray);
+      border-left: 3px solid var(--callout-color, var(--secondary));
+      border-radius: 3px;
+      box-shadow: none;
+      background: var(--bt-paper);
+    }
+
+    & .katex,
+    & .katex-display {
+      color: var(--secondary);
+    }
+    & .katex-display {
+      margin: 1.4rem 0;
+    }
+
+    & img {
+      border: 1px solid var(--lightgray);
+      border-radius: 2px;
+      padding: 4px;
+      background: var(--bt-paper);
+    }
+  }
+}

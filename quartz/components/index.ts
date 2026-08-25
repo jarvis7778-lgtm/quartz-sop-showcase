@@ -28,6 +28,8 @@ import SupaComments from "./SupaComments"
 import ReservationCalendar from "./ReservationCalendar"
 import Annotation from "./Annotation"
 import Navbar from "./Navbar"
+import ThemeSwitcher from "./ThemeSwitcher"
+import HomepageSlots from "./HomepageSlots"
 
 export {
   ArticleTitle,
@@ -60,4 +62,6 @@ export {
   ReservationCalendar,
   Annotation,
   Navbar,
+  ThemeSwitcher,
+  HomepageSlots,
 }

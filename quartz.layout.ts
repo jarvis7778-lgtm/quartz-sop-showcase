@@ -33,11 +33,11 @@ const contentRightComponents = [
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
-  header: sharedHeaderComponents,
+  header: [...sharedHeaderComponents, Component.HomepageSlots()],
   afterBody: sharedAfterBodyComponents,
   footer: Component.Footer({
     links: {
-      GitHub: "https://github.com/jackyzha0/quartz",
+      Quartz: "https://github.com/jackyzha0/quartz",
     },
   }),
 }
@@ -73,6 +73,7 @@ export const defaultContentPageLayout: PageLayout = {
         },
         { Component: Component.Darkmode() },
         { Component: Component.ReaderMode() },
+        { Component: Component.ThemeSwitcher() },
       ],
     }),
     Component.Explorer({ folderClickBehavior: "collapse", filterFn: explorerFilter }),
@@ -93,6 +94,7 @@ export const defaultListPageLayout: PageLayout = {
           grow: true,
         },
         { Component: Component.Darkmode() },
+        { Component: Component.ThemeSwitcher() },
       ],
     }),
     Component.Explorer({ folderClickBehavior: "collapse", filterFn: explorerFilter }),

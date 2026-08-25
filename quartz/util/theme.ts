@@ -49,7 +49,7 @@ export function getFontSpecificationName(spec: FontSpecification): string {
   return spec.name
 }
 
-function formatFontSpecification(
+export function formatFontSpecification(
   type: "title" | "header" | "body" | "code",
   spec: FontSpecification,
 ) {
@@ -92,6 +92,47 @@ export function googleFontHref(theme: Theme) {
   const codeFont = formatFontSpecification("code", code)
 
   return `https://fonts.googleapis.com/css2?family=${headerFont}&family=${bodyFont}&family=${codeFont}&display=swap`
+}
+
+/**
+ * The three css2 `family=` specifiers a single theme needs (header, body, code),
+ * URL-encoded exactly as `googleFontHref` produces them. Exposed so a multi-theme
+ * build can gather every preset's families into one deduplicated request.
+ */
+export function themeFontFamilySpecs(theme: Theme): string[] {
+  const { header, body, code } = theme.typography
+  return [
+    formatFontSpecification("header", header),
+    formatFontSpecification("body", body),
+    formatFontSpecification("code", code),
+  ]
+}
+
+/**
+ * The CSS custom-property declarations for one color scheme (light or dark),
+ * without the surrounding selector. Reused by both `joinStyles` (build default)
+ * and the per-preset runtime token blocks.
+ */
+export function colorVarsBlock(scheme: ColorScheme): string {
+  return `  --light: ${scheme.light};
+  --lightgray: ${scheme.lightgray};
+  --gray: ${scheme.gray};
+  --darkgray: ${scheme.darkgray};
+  --dark: ${scheme.dark};
+  --secondary: ${scheme.secondary};
+  --tertiary: ${scheme.tertiary};
+  --highlight: ${scheme.highlight};
+  --textHighlight: ${scheme.textHighlight};`
+}
+
+/**
+ * The CSS custom-property declarations for a theme's typography (font families).
+ */
+export function fontVarsBlock(theme: Theme): string {
+  return `  --titleFont: "${getFontSpecificationName(theme.typography.title || theme.typography.header)}", ${DEFAULT_SANS_SERIF};
+  --headerFont: "${getFontSpecificationName(theme.typography.header)}", ${DEFAULT_SANS_SERIF};
+  --bodyFont: "${getFontSpecificationName(theme.typography.body)}", ${DEFAULT_SANS_SERIF};
+  --codeFont: "${getFontSpecificationName(theme.typography.code)}", ${DEFAULT_MONO};`
 }
 
 export function googleFontSubsetHref(theme: Theme, text: string) {
@@ -145,32 +186,13 @@ export function joinStyles(theme: Theme, ...stylesheet: string[]) {
 ${stylesheet.join("\n\n")}
 
 :root {
-  --light: ${theme.colors.lightMode.light};
-  --lightgray: ${theme.colors.lightMode.lightgray};
-  --gray: ${theme.colors.lightMode.gray};
-  --darkgray: ${theme.colors.lightMode.darkgray};
-  --dark: ${theme.colors.lightMode.dark};
-  --secondary: ${theme.colors.lightMode.secondary};
-  --tertiary: ${theme.colors.lightMode.tertiary};
-  --highlight: ${theme.colors.lightMode.highlight};
-  --textHighlight: ${theme.colors.lightMode.textHighlight};
+${colorVarsBlock(theme.colors.lightMode)}
 
-  --titleFont: "${getFontSpecificationName(theme.typography.title || theme.typography.header)}", ${DEFAULT_SANS_SERIF};
-  --headerFont: "${getFontSpecificationName(theme.typography.header)}", ${DEFAULT_SANS_SERIF};
-  --bodyFont: "${getFontSpecificationName(theme.typography.body)}", ${DEFAULT_SANS_SERIF};
-  --codeFont: "${getFontSpecificationName(theme.typography.code)}", ${DEFAULT_MONO};
+${fontVarsBlock(theme)}
 }
 
 :root[saved-theme="dark"] {
-  --light: ${theme.colors.darkMode.light};
-  --lightgray: ${theme.colors.darkMode.lightgray};
-  --gray: ${theme.colors.darkMode.gray};
-  --darkgray: ${theme.colors.darkMode.darkgray};
-  --dark: ${theme.colors.darkMode.dark};
-  --secondary: ${theme.colors.darkMode.secondary};
-  --tertiary: ${theme.colors.darkMode.tertiary};
-  --highlight: ${theme.colors.darkMode.highlight};
-  --textHighlight: ${theme.colors.darkMode.textHighlight};
+${colorVarsBlock(theme.colors.darkMode)}
 }
 `
 }

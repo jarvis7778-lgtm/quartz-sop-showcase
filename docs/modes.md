@@ -1,80 +1,47 @@
 # Static and Collab Modes
 
-This template supports two deployment modes from one codebase.
+The same source tree can be built in two validated modes through `SITE_MODE`.
 
 ## Static Mode
 
-Static Mode is the default. It needs only Node.js for building and any static host for deployment.
-
-Enabled features:
-
-- Markdown/Obsidian content
-- Quartz navigation
-- Search
-- Backlinks
-- Table of contents
-- Dark mode
-- Reader mode
-
-Disabled features:
-
-- GitHub login
-- Supabase comments
-- Page annotations
-- Reservation calendar
-
-Configuration:
-
-```ts
-export const siteFeatureConfig = {
-  mode: "static",
-  features: presets.static,
-}
+```bash
+SITE_MODE=static SITE_URL=docs.example.com npx quartz build
 ```
+
+This is the default and requires no database. Auth, comments, annotations and reservations are absent from the generated site.
 
 ## Collab Mode
 
-Collab Mode enables database-backed collaboration features.
-
-Enabled features:
-
-- Everything in Static Mode
-- GitHub OAuth login
-- Page comments
-- Page annotations
-- Reservation calendar
-
-Requirements:
-
-- Supabase project
-- GitHub OAuth app
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-- `supabase/migrations/001_initial_schema.sql` applied to the database
-
-Configuration:
-
-```ts
-export const siteFeatureConfig = {
-  mode: "collab",
-  features: presets.collab,
-}
+```bash
+SITE_MODE=collab \
+SUPABASE_URL=https://your-project.supabase.co \
+SUPABASE_ANON_KEY=your-public-anon-key \
+SITE_URL=docs.example.com \
+npx quartz build
 ```
 
-## Custom Feature Mix
+Collab Mode adds GitHub OAuth, comments, text annotations and reservations. Apply all SQL migrations in numeric order for a new database. Existing databases apply only newer migration numbers after taking a backup.
 
-You can also enable only some features:
+The Supabase client is a global locally bundled prescript, independent of the visible Auth component. The shipped presets nevertheless keep the collaboration features together because each feature needs a signed-in user and shared authorization policy.
+
+## Custom feature mixes
+
+Feature dependencies are validated at build time. Database-backed features currently require `auth: true`:
 
 ```ts
-export const siteFeatureConfig = {
-  mode: "static",
+validateSiteFeatureConfig({
+  mode: "collab",
   features: {
-    auth: false,
+    auth: true,
     comments: false,
     annotations: false,
-    reservations: false,
+    reservations: true,
   },
-}
+})
 ```
 
-For example, keep `comments` disabled while enabling `reservations` if you only need shared-resource booking.
+A configuration such as `auth: false, reservations: true` fails the build instead of waiting in the browser and silently showing “not configured”.
+
+## Production boundary
+
+The default GitHub OAuth flow does not implement an application-level GitHub organization allowlist. For a private team site, use Cloudflare Access or another edge identity allowlist and test RLS with anonymous, member and administrator identities before launch.

@@ -44,6 +44,7 @@ export default ((userOpts?: SupaCommentsOptions) => {
             id="comment-input"
             class="comment-input"
             placeholder={opts.placeholder}
+            maxlength={5000}
             rows={3}
           ></textarea>
           <button id="submit-comment" class="submit-comment-btn">
@@ -242,7 +243,10 @@ export default ((userOpts?: SupaCommentsOptions) => {
   `
 
   SupaComments.afterDOMLoaded = `
-    (async function() {
+    let commentsRun = 0
+
+    async function initSupaComments() {
+      const run = ++commentsRun
       const container = document.getElementById('supa-comments')
       if (!container) return
       
@@ -254,71 +258,10 @@ export default ((userOpts?: SupaCommentsOptions) => {
       const commentsList = document.getElementById('comments-list')
       const emptyPrompt = document.getElementById('comments-empty')
       
-      // 等待 Supabase 客户端初始化
+      // Supabase 客户端由全局 prescript 本地打包并初始化
       let client = null
       let currentUser = null
       let currentUserDbRecord = null
-      
-      async function ensureSupabaseClient() {
-        const supabaseUrl = window.__SUPABASE_URL__
-        const supabaseKey = window.__SUPABASE_ANON_KEY__
-
-        if (!supabaseUrl || !supabaseKey ||
-            supabaseUrl === '__SUPABASE_URL__' ||
-            supabaseKey === '__SUPABASE_ANON_KEY__') {
-          return null
-        }
-
-        if (window.supabaseClient) {
-          return window.supabaseClient
-        }
-
-        if (!window.__supabaseScriptPromise) {
-          window.__supabaseScriptPromise = new Promise((resolve, reject) => {
-            if (window.supabase?.createClient) {
-              resolve(window.supabase)
-              return
-            }
-
-            const existingScript = document.querySelector('script[data-supabase-cdn="true"]')
-            if (existingScript) {
-              existingScript.addEventListener('load', () => resolve(window.supabase), { once: true })
-              existingScript.addEventListener('error', reject, { once: true })
-              return
-            }
-
-            const script = document.createElement('script')
-            script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js'
-            script.async = true
-            script.dataset.supabaseCdn = 'true'
-            script.onload = () => resolve(window.supabase)
-            script.onerror = reject
-            document.head.appendChild(script)
-          })
-        }
-
-        if (!window.__supabaseClientPromise) {
-          window.__supabaseClientPromise = window.__supabaseScriptPromise
-            .then((supabaseLib) => {
-              const createClient = supabaseLib?.createClient
-              if (!createClient) {
-                throw new Error('Supabase SDK 加载失败')
-              }
-
-              if (!window.supabaseClient) {
-                window.supabaseClient = createClient(supabaseUrl, supabaseKey)
-              }
-
-              return window.supabaseClient
-            })
-            .catch((err) => {
-              window.__supabaseClientPromise = null
-              throw err
-            })
-        }
-
-        return window.__supabaseClientPromise
-      }
 
       async function getCurrentUser() {
         try {
@@ -336,12 +279,13 @@ export default ((userOpts?: SupaCommentsOptions) => {
       }
       
       try {
-        client = await ensureSupabaseClient()
+        client = await window.supabaseClientReady
       } catch (err) {
         console.error('初始化评论区 Supabase 失败:', err)
         commentsList.innerHTML = '<div class="comments-loading">评论初始化失败，请刷新重试</div>'
         return
       }
+      if (run !== commentsRun || !container.isConnected) return
       
       if (!client) {
         commentsList.innerHTML = '<div class="comments-loading">评论功能未配置</div>'
@@ -381,7 +325,7 @@ export default ((userOpts?: SupaCommentsOptions) => {
               \${!isReply ? '<button class="comment-action-btn reply-btn">回复</button>' : ''}
               \${canDelete ? '<button class="comment-action-btn delete-comment-btn">删除</button>' : ''}
             </div>
-            \${!isReply ? '<div class="reply-input-area"><textarea class="reply-input" placeholder="回复..." rows="2"></textarea><button class="reply-submit-btn">发送</button></div>' : ''}
+            \${!isReply ? '<div class="reply-input-area"><textarea class="reply-input" maxlength="5000" placeholder="回复..." rows="2"></textarea><button class="reply-submit-btn">发送</button></div>' : ''}
             \${comment.replies && comment.replies.length > 0 ? 
               '<div class="comment-replies">' + comment.replies.map(r => renderComment(r, true)).join('') + '</div>' 
               : ''}
@@ -477,12 +421,13 @@ export default ((userOpts?: SupaCommentsOptions) => {
             
             btn.disabled = true
             try {
-              await client.from('comments').insert({
+              const { error } = await client.from('comments').insert({
                 page_path: pagePath,
                 content: content,
                 author_id: currentUser.id,
                 parent_id: parentId,
               })
+              if (error) throw error
               input.value = ''
               await loadComments()
             } catch (err) {
@@ -502,7 +447,8 @@ export default ((userOpts?: SupaCommentsOptions) => {
             const commentId = item.dataset.commentId
             
             try {
-              await client.from('comments').delete().eq('id', commentId)
+              const { error } = await client.from('comments').delete().eq('id', commentId)
+              if (error) throw error
               await loadComments()
             } catch (err) {
               console.error('删除失败:', err)
@@ -520,7 +466,7 @@ export default ((userOpts?: SupaCommentsOptions) => {
           // 获取用户数据库记录
           const { data } = await client
             .from('users')
-            .select('*')
+            .select('id, username, avatar_url, role')
             .eq('id', currentUser.id)
             .single()
           currentUserDbRecord = data
@@ -540,11 +486,12 @@ export default ((userOpts?: SupaCommentsOptions) => {
         
         submitBtn.disabled = true
         try {
-          await client.from('comments').insert({
+          const { error } = await client.from('comments').insert({
             page_path: pagePath,
             content: content,
             author_id: currentUser.id,
           })
+          if (error) throw error
           commentInput.value = ''
           await loadComments()
         } catch (err) {
@@ -555,15 +502,24 @@ export default ((userOpts?: SupaCommentsOptions) => {
       })
       
       // 监听登录状态变化
-      client.auth.onAuthStateChange(() => {
+      const { data: authListener } = client.auth.onAuthStateChange(() => {
+        if (run !== commentsRun || !container.isConnected) return
         updateUserState()
         loadComments()
+      })
+      window.addCleanup(() => {
+        commentsRun++
+        authListener?.subscription?.unsubscribe?.()
       })
       
       // 初始化
       await updateUserState()
+      if (run !== commentsRun || !container.isConnected) return
       await loadComments()
-    })()
+    }
+
+    document.addEventListener('nav', initSupaComments)
+    initSupaComments()
   `
 
   return SupaComments

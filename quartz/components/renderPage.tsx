@@ -225,6 +225,44 @@ export function renderPage(
   const visited = new Set<FullSlug>([slug])
   renderTranscludes(root, cfg, slug, componentData, visited)
 
+  // The homepage is authored as ordinary Markdown. Stamp stable semantic slots
+  // onto its real HAST before rendering so community themes can target meaning
+  // rather than brittle child positions. The tiny runtime annotator repeats this
+  // after Quartz SPA navigation because micromorph may replace the article DOM.
+  if (slug === "index") {
+    const topLevel = root.children.filter((node): node is Element => node.type === "element")
+    const setSlot = (node: Element | undefined, slot: string) => {
+      if (!node) return
+      node.properties ??= {}
+      node.properties["data-theme-slot"] = slot
+    }
+    const containsLink = (node: Element) => {
+      let found = false
+      visit(node, "element", (child) => {
+        if (child.tagName === "a") found = true
+      })
+      return found
+    }
+
+    const hero = topLevel.find((node) => node.tagName === "h1")
+    setSlot(hero, "hero")
+    if (hero) hero.properties["data-theme-slot-title"] = "hero-title"
+    setSlot(
+      topLevel.find((node) => node.tagName === "p"),
+      "intro",
+    )
+    for (const heading of topLevel.filter((node) => node.tagName === "h2")) {
+      setSlot(heading, "section-heading")
+    }
+    for (const list of topLevel.filter((node) => node.tagName === "ul")) {
+      setSlot(list, containsLink(list) ? "start-links" : "feature-list")
+    }
+    setSlot(
+      topLevel.find((node) => node.tagName === "blockquote"),
+      "notice",
+    )
+  }
+
   // set componentData.tree to the edited html that has transclusions rendered
   componentData.tree = root
 
@@ -260,7 +298,7 @@ export function renderPage(
   const lang = componentData.fileData.frontmatter?.lang ?? cfg.locale?.split("-")[0] ?? "en"
   const direction = i18n(cfg.locale).direction ?? "ltr"
   const doc = (
-    <html lang={lang} dir={direction}>
+    <html lang={lang} dir={direction} data-theme-preset={cfg.themePreset}>
       <Head {...componentData} />
       <body data-slug={slug} data-theme-preset={cfg.themePreset}>
         <div id="quartz-root" class="page">

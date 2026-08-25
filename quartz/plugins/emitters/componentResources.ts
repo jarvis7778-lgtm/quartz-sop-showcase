@@ -18,6 +18,10 @@ import {
 import { Features, transform } from "lightningcss"
 import { transform as transpile } from "esbuild"
 import { write } from "./helpers"
+import { themeRegistry, buildAllPresetTokens } from "../../../themes"
+import { siteFeatureConfig } from "../../../site.features"
+// @ts-ignore
+import supabaseScript from "../../components/scripts/supabase.inline"
 
 type ComponentResources = {
   css: string[]
@@ -78,6 +82,10 @@ async function joinScripts(scripts: string[]): Promise<string> {
 
 function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentResources) {
   const cfg = ctx.cfg.configuration
+
+  if (Object.values(siteFeatureConfig.features).some(Boolean)) {
+    componentResources.beforeDOMLoaded.push(supabaseScript)
+  }
 
   // popovers
   if (cfg.enablePopovers) {
@@ -323,11 +331,18 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       // that everyone else had the chance to register a listener for it
       addGlobalPageResources(ctx, componentResources)
 
+      // Runtime hot-switching: ship body[data-theme-preset="<id>"] token blocks
+      // for EVERY preset in this one build. Flipping body.dataset.themePreset at
+      // runtime then re-points every var(--…) with no rebuild. These body-scoped
+      // blocks out-specify the joinStyles :root default so a selection wins.
+      const allPresetTokens = buildAllPresetTokens(themeRegistry)
+
       const stylesheet = joinStyles(
         ctx.cfg.configuration.theme,
         googleFontsStyleSheet,
         ...componentResources.css,
         styles,
+        allPresetTokens,
       )
 
       const [prescript, postscript] = await Promise.all([

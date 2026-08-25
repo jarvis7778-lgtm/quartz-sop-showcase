@@ -8,6 +8,10 @@ import { KatexOptions } from "katex"
 import { Options as MathjaxOptions } from "rehype-mathjax/svg"
 //@ts-ignore
 import { Options as TypstOptions } from "@myriaddreamin/rehype-typst"
+import { readFileSync } from "node:fs"
+import { join } from "node:path"
+
+const katexCss = readFileSync(join(process.cwd(), "node_modules/katex/dist/katex.min.css"), "utf8")
 
 interface Options {
   renderEngine: "katex" | "mathjax" | "typst"
@@ -60,15 +64,8 @@ export const Latex: QuartzTransformerPlugin<Partial<Options>> = (opts) => {
       switch (engine) {
         case "katex":
           return {
-            css: [{ content: "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" }],
-            js: [
-              {
-                // fix copy behaviour: https://github.com/KaTeX/KaTeX/blob/main/contrib/copy-tex/README.md
-                src: "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js",
-                loadTime: "afterDOMReady",
-                contentType: "external",
-              },
-            ],
+            css: [{ content: katexCss, inline: true }],
+            js: [],
           }
       }
     },

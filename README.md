@@ -1,33 +1,18 @@
-# Quartz SOP Template
+# cfour
 
-A reusable SOP and team knowledge-base template built on [Quartz 4](https://quartz.jzhao.xyz), Markdown/Obsidian, and Cloudflare Pages. It defaults to a pure static frontend and can optionally enable Supabase-powered collaboration features.
+A theme-rich SOP and personal knowledge-site template built on Quartz 4. One static build contains eight runtime-switchable visual presets. It defaults to a backend-free Static Mode and can optionally enable Supabase collaboration.
 
-## Modes
+## What ships
 
-| Mode            | Requires Supabase | Features                                                                                             |
-| --------------- | ----------------- | ---------------------------------------------------------------------------------------------------- |
-| **Static Mode** | No                | Obsidian/Markdown content, Quartz static site, search, backlinks, navigation, dark mode, reader mode |
-| **Collab Mode** | Yes               | Static Mode plus GitHub login, page comments, annotations, and reservation calendar                  |
+- Markdown/Obsidian authoring under `content/`
+- Search, backlinks, navigation, dark mode, reader mode, RSS and sitemap
+- Eight runtime themes: `current`, `notion`, `things`, `anuppuccin`, `bluetopaz`, `carbon`, `nocturne`, `fieldnotes`
+- Optional GitHub login, comments, text annotations and reservation calendar
+- Cloudflare Pages/EdgeOne/static-host output plus an opt-in GitHub Pages workflow
 
-The default is **Static Mode**. Change `site.features.ts` to enable Collab Mode.
+## Quick start
 
-## Features
-
-- Publish Markdown notes as a searchable static website
-- Keep an Obsidian-friendly `content/` authoring workflow
-- Run without any database or backend by default
-- Optionally enable GitHub OAuth through Supabase
-- Optionally enable page comments, annotations, and shared-resource reservations
-- Deploy to Cloudflare Pages, GitHub Pages, or any static host
-
-## Tech Stack
-
-- **Static site**: Quartz 4.x
-- **Content**: Markdown files under `content/`
-- **Optional auth/data**: Supabase Auth + PostgreSQL + Realtime
-- **Hosting**: Cloudflare Pages, GitHub Pages, or any static host
-
-## Quick Start
+Requirements: Node.js 22+ and npm 10.9+.
 
 ```bash
 npm install
@@ -36,109 +21,129 @@ npm run dev
 
 Open <http://localhost:8081>.
 
-## Choose a Mode
+## Build modes
 
-### Static Mode
-
-No setup needed. The default `site.features.ts` disables all database-backed features:
-
-```ts
-export const siteFeatureConfig = {
-  mode: "static",
-  features: presets.static,
-}
-```
-
-### Collab Mode
-
-Change `site.features.ts`:
-
-```ts
-export const siteFeatureConfig = {
-  mode: "collab",
-  features: presets.collab,
-}
-```
-
-Then create a Supabase project, run `supabase/migrations/001_initial_schema.sql`, and expose the public frontend variables during build:
+Static Mode is the default:
 
 ```bash
-export SUPABASE_URL="https://your-project.supabase.co"
-export SUPABASE_ANON_KEY="your-anon-key"
-npm run dev
+SITE_MODE=static SITE_URL=docs.example.com npx quartz build
 ```
+
+Collab Mode:
+
+```bash
+SITE_MODE=collab \
+SITE_URL=docs.example.com \
+SUPABASE_URL="https://your-project.supabase.co" \
+SUPABASE_ANON_KEY="your-public-anon-key" \
+npx quartz build
+```
+
+`SITE_URL` must omit the path and may include or omit `https://`. If it is absent, cfour omits canonical/social absolute URLs instead of publishing a placeholder domain. Analytics are disabled by default.
+
+## Collab database
+
+### New installation
+
+Apply every migration in numeric order:
+
+```text
+supabase/migrations/001_initial_schema.sql
+supabase/migrations/002_user_sync_and_rls_patch.sql
+supabase/migrations/003_annotations_schema_update.sql
+supabase/migrations/004_security_and_content_constraints.sql
+```
+
+Do not stop after `001`: the later migrations upgrade annotation anchors, protect member email columns, make public views obey RLS, and add content limits.
+
+### Existing installation
+
+Apply only migration numbers newer than the last migration already applied. Back up the database first. Migration `004` is the security patch for existing installations.
+
+Before production, test the Data API with `anon`, ordinary authenticated, and admin identities. Collab Mode is intended for a trusted group; protect the site with Cloudflare Access or an equivalent edge allowlist if arbitrary GitHub users must not join.
 
 ## Themes
 
-Five complete visual presets ship with the template — `current` (default), `notion` (Notion workspace), `things` (Things 3), `anuppuccin` (Catppuccin pastels), and `bluetopaz` (scholarly paper-and-ink, CJK-friendly serif). Switch with one line in `site.theme.ts`:
+Choose only the first-visit default in `site.theme.ts`:
 
 ```ts
-export const siteTheme = {
-  preset: "things" as ThemePresetName,
+export const siteTheme: { preset: ThemePresetName } = {
+  preset: "carbon",
 }
 ```
 
-Each preset covers the homepage, SOP library, article typography, and both light/dark modes. See [docs/themes.md](./docs/themes.md) for the full gallery, preview workflow, and how to add your own preset.
+Visitors can switch all eight themes at runtime. The choice persists across reloads and Quartz SPA navigation. Only the default preset's Google Fonts stylesheet blocks first paint; other theme fonts load when selected. Theme changes also emit the normal `themechange` event so Mermaid and Graph redraw with the new tokens.
 
-## Content Workflow
+New themes require:
 
-Edit Markdown under `content/`:
+1. `themes/presets/<id>/theme.ts`
+2. `themes/presets/<id>/theme.scss`
+3. a manifest import/entry in `themes/index.ts`
+4. a Sass `@use` entry in `quartz/styles/custom.scss`
 
-```text
-content/
-├── index.md
-├── calendar.md
-└── sop/
-    ├── index.md
-    ├── example-onboarding.md
-    ├── example-shared-resource.md
-    └── example-document-review.md
+The release-contract test checks that all registered presets have Sass entrypoints. See [`docs/themes.md`](./docs/themes.md).
+
+### Build the eight-theme showcase
+
+```bash
+npm run build:showcase
+node serve-previews.mjs
 ```
 
-Disable comments on any page with frontmatter when Collab Mode is enabled:
-
-```yaml
----
-comments: false
----
-```
-
-## Project Structure
-
-```text
-quartz-sop-template/
-├── content/                    # Example Markdown content
-├── site.features.ts            # Static/Collab feature preset
-├── quartz/                     # Quartz core plus custom components
-│   └── components/
-│       ├── Auth.tsx
-│       ├── SupaComments.tsx
-│       ├── Annotation.tsx
-│       └── ReservationCalendar.tsx
-├── supabase/migrations/        # Optional database schema and RLS policies
-├── docs/                       # Architecture and setup guides
-├── quartz.config.ts
-├── quartz.layout.ts
-└── package.json
-```
+This performs one Quartz build and creates eight showcase entry directories; it does not rewrite `site.theme.ts` or run eight compiles.
 
 ## Deployment
 
-1. Push this repository to GitHub.
-2. Create a Cloudflare Pages project.
-3. Set build command: `npx quartz build`.
-4. Set output directory: `public`.
-5. Only add `SUPABASE_URL` and `SUPABASE_ANON_KEY` if using Collab Mode.
+### Cloudflare Pages or EdgeOne Pages
 
-See `docs/setup-guide.md` for the full setup checklist.
+```text
+Build command:  npx quartz build
+Output:         public
+Node:           22
+```
 
-## Privacy Checklist Before Publishing
+Set `SITE_MODE` and `SITE_URL`; add the two public Supabase variables only for Collab Mode. `quartz/static/_headers` supplies baseline security headers on hosts that support the Cloudflare `_headers` format. EdgeOne can use the same static build/output settings; verify any platform-specific header rules in its console.
 
-- Replace all example pages with your own content.
-- Do not commit real credentials, private URLs, or screenshots with sensitive data.
-- Keep `.env`, `node_modules/`, `public/`, Obsidian caches, and generated files out of Git.
-- If the site must be private, use Cloudflare Access or another edge access-control layer.
+### GitHub Pages
+
+The opt-in workflow is `.github/workflows/pages.yaml`.
+
+1. Set repository variable `ENABLE_GITHUB_PAGES=true`.
+2. Set `SITE_URL` to the final Pages/custom domain.
+3. Enable GitHub Pages with **GitHub Actions** as source.
+
+For project sites served below `/repository/`, use a custom domain or verify Quartz base-path behavior before production OAuth. Collab OAuth redirects preserve the current page path.
+
+## Updating
+
+`npx quartz update` no longer silently pulls Quartz upstream. It only updates from a remote named `cfour` and fails closed when that remote is absent:
+
+```bash
+git remote add cfour <YOUR-CFOUR-REPOSITORY-URL>
+npx quartz update
+```
+
+Use the actual repository that publishes your cfour distribution. Keep content/config changes in your own commits and review update diffs before merging. Quartz upstream upgrades should be tested separately rather than mixed into an unattended template update.
+
+## Verification
+
+```bash
+npm run check
+npm test
+npm run test:db # requires Docker
+SITE_MODE=static npx quartz build
+SITE_MODE=collab SUPABASE_URL=https://example.supabase.co SUPABASE_ANON_KEY=public-anon-placeholder npx quartz build
+npm audit --omit=dev
+```
+
+## Privacy and China-readiness
+
+- Supabase JS and Mermaid are bundled locally; cfour no longer needs jsDelivr or cdnjs for them.
+- Theme fonts remain Google Fonts by default, but are loaded per preset rather than all at once. KaTeX, Mermaid and Supabase JS are bundled locally. For a strict mainland/offline deployment, self-host fonts and retain their license files.
+- Replace example content and all third-party image URLs before publishing.
+- Never commit `.env`, secrets, private screenshots, or service-role keys. The anon key is public by design; authorization must remain in RLS.
+- Analytics are opt-in, not enabled by default.
 
 ## License
 
-This template follows the Quartz upstream MIT license. See `LICENSE.txt`.
+Quartz's upstream MIT notice remains in [`LICENSE.txt`](./LICENSE.txt). See [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md) for attribution and theme/font guidance.

@@ -215,12 +215,6 @@ See the [documentation](https://quartz.jzhao.xyz) for how to get started.
   )
   await fs.promises.writeFile(configFilePath, configContent)
 
-  // setup remote
-  execSync(
-    `git remote show upstream || git remote add upstream https://github.com/jackyzha0/quartz.git`,
-    { stdio: "ignore" },
-  )
-
   outro(`You're all set! Not sure what to do next? Try:
   • Customizing Quartz a bit more by editing \`quartz.config.ts\`
   • Running \`npx quartz build --serve\` to preview your Quartz locally
@@ -494,18 +488,26 @@ export async function handleUpdate(argv) {
   const contentFolder = resolveContentPath(argv.directory)
   console.log(`\n${styleText(["bgGreen", "black"], ` Quartz v${version} `)} \n`)
   console.log("Backing up your content")
-  execSync(
-    `git remote show upstream || git remote add upstream https://github.com/jackyzha0/quartz.git`,
-  )
+  try {
+    execSync("git remote get-url cfour", { stdio: "ignore" })
+  } catch {
+    console.log(
+      styleText(
+        "red",
+        "No `cfour` update remote is configured. Add your template publisher's repository as `cfour` before updating; Quartz upstream updates are intentionally not pulled automatically.",
+      ),
+    )
+    return
+  }
   await stashContentFolder(contentFolder)
   console.log(
-    "Pulling updates... you may need to resolve some `git` conflicts if you've made changes to components or plugins.",
+    "Pulling cfour updates... you may need to resolve conflicts if you've customized framework files.",
   )
 
   try {
-    gitPull(UPSTREAM_NAME, QUARTZ_SOURCE_BRANCH)
+    gitPull("cfour", "main")
   } catch {
-    console.log(styleText("red", "An error occurred above while pulling updates."))
+    console.log(styleText("red", "An error occurred above while pulling cfour updates."))
     await popContentFolder(contentFolder)
     return
   }

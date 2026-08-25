@@ -3,6 +3,8 @@ import * as Plugin from "./quartz/plugins"
 import { siteTheme } from "./site.theme"
 import { createThemePreset } from "./themes"
 
+const siteBaseUrl = process.env.SITE_URL?.replace(/^https?:\/\//, "").replace(/\/$/, "")
+
 /**
  * Quartz 4 Configuration
  *
@@ -14,11 +16,9 @@ const config: QuartzConfig = {
     pageTitleSuffix: "",
     enableSPA: true,
     enablePopovers: true,
-    analytics: {
-      provider: "plausible",
-    },
+    analytics: null,
     locale: "en-US",
-    baseUrl: "your-site.pages.dev",
+    baseUrl: siteBaseUrl,
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "modified",
     theme: createThemePreset(siteTheme.preset),

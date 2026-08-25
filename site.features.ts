@@ -27,10 +27,23 @@ const presets: Record<SiteMode, SiteFeatures> = {
   },
 }
 
-export const siteFeatureConfig: SiteFeatureConfig = {
-  mode: "static",
-  features: presets.static,
+export function validateSiteFeatureConfig(config: SiteFeatureConfig): SiteFeatureConfig {
+  const needsSupabase =
+    config.features.comments || config.features.annotations || config.features.reservations
+  if (needsSupabase && !config.features.auth) {
+    throw new Error(
+      "Supabase-backed comments, annotations, and reservations currently require auth to bootstrap the client",
+    )
+  }
+  return config
 }
+
+const selectedMode: SiteMode = process.env.SITE_MODE === "collab" ? "collab" : "static"
+
+export const siteFeatureConfig: SiteFeatureConfig = validateSiteFeatureConfig({
+  mode: selectedMode,
+  features: presets[selectedMode],
+})
 
 export function isFeatureEnabled(feature: keyof SiteFeatures): boolean {
   return siteFeatureConfig.features[feature]
