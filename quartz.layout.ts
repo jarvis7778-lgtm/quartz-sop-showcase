@@ -30,7 +30,8 @@ const contentRightComponents = [
   Component.Backlinks(),
 ].filter(Boolean) as PageLayout["right"]
 
-const templateRepositoryUrl = process.env.TEMPLATE_REPOSITORY_URL
+const templateRepositoryUrl =
+  process.env.TEMPLATE_REPOSITORY_URL ?? "https://github.com/jarvis7778-lgtm/quartz-sop-template"
 const footerLinks: Record<string, string> = {
   "SOP 示例库": "/sop/",
   ...(templateRepositoryUrl ? { "GitHub 模板": templateRepositoryUrl } : {}),

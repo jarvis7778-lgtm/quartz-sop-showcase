@@ -33,7 +33,8 @@ const capabilities = [
 ]
 
 const ShowcaseLanding: QuartzComponent = (_props: QuartzComponentProps) => {
-  const repositoryUrl = process.env.TEMPLATE_REPOSITORY_URL
+  const repositoryUrl =
+    process.env.TEMPLATE_REPOSITORY_URL ?? "https://github.com/jarvis7778-lgtm/quartz-sop-template"
 
   return (
     <article class="showcase-home" aria-label="Cfour SOP Gallery 首页">
