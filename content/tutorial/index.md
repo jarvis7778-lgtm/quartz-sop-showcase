@@ -26,7 +26,6 @@
 
 | 文件 | 内容 |
 |------|------|
-| [outline-final.md](outline-final.md) | 教程大纲（完整版） |
 | [sources.md](sources.md) | 参考来源汇总 |
 | [hardware-list.md](hardware-list.md) | 硬件采购清单 |
 

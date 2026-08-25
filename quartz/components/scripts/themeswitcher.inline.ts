@@ -96,104 +96,29 @@ document.addEventListener("nav", () => {
   const switchers = Array.from(document.getElementsByClassName("theme-switcher")) as HTMLElement[]
 
   for (const switcher of switchers) {
-    const button = switcher.querySelector<HTMLButtonElement>(".theme-switcher-button")
-    const menu = switcher.querySelector<HTMLElement>(".theme-switcher-menu")
-    if (!button || !menu) continue
+    const select = switcher.querySelector<HTMLSelectElement>(".theme-switcher-select")
+    if (!select) continue
 
-    const options = Array.from(menu.querySelectorAll<HTMLButtonElement>(".theme-switcher-option"))
+    select.value = current
 
-    const markSelected = (preset: string) => {
-      for (const opt of options) {
-        const selected = opt.dataset.themeValue === preset
-        opt.setAttribute("aria-selected", selected ? "true" : "false")
-        opt.classList.toggle("selected", selected)
-      }
-    }
-    markSelected(current)
-
-    const closeMenu = () => {
-      menu.hidden = true
-      button.setAttribute("aria-expanded", "false")
-    }
-    const openMenu = () => {
-      menu.hidden = false
-      button.setAttribute("aria-expanded", "true")
-      const selected = options.find((o) => o.getAttribute("aria-selected") === "true")
-      ;(selected ?? options[0])?.focus()
-    }
-    const toggleMenu = () => (menu.hidden ? openMenu() : closeMenu())
-
-    const select = (preset: string) => {
+    const onChange = () => {
+      const preset = select.value
       if (!isValidPreset(preset)) return
-      const selectedOption = options.find((option) => option.dataset.themeValue === preset)
+      const selectedOption = select.selectedOptions[0]
       loadPresetFont(selectedOption?.dataset.themeFontHref)
       applyPreset(preset)
       persist(preset)
-      markSelected(preset)
       emitPresetChange(preset)
-      closeMenu()
-      button.focus()
-    }
-
-    const onButtonClick = (e: MouseEvent) => {
-      e.stopPropagation()
-      toggleMenu()
-    }
-    const onButtonKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
-        e.preventDefault()
-        openMenu()
+      for (const other of switchers) {
+        const otherSelect = other.querySelector<HTMLSelectElement>(".theme-switcher-select")
+        if (otherSelect) otherSelect.value = preset
       }
     }
 
-    const onOptionClick = (e: MouseEvent) => {
-      const target = (e.currentTarget as HTMLButtonElement).dataset.themeValue
-      if (target) select(target)
-    }
-    const onMenuKey = (e: KeyboardEvent) => {
-      const idx = options.indexOf(document.activeElement as HTMLButtonElement)
-      if (e.key === "Escape") {
-        e.preventDefault()
-        closeMenu()
-        button.focus()
-      } else if (e.key === "ArrowDown") {
-        e.preventDefault()
-        options[(idx + 1 + options.length) % options.length]?.focus()
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault()
-        options[(idx - 1 + options.length) % options.length]?.focus()
-      } else if (e.key === "Home") {
-        e.preventDefault()
-        options[0]?.focus()
-      } else if (e.key === "End") {
-        e.preventDefault()
-        options[options.length - 1]?.focus()
-      }
-    }
-
-    // Close when the pointer or keyboard focus leaves the composite widget.
-    const onDocClick = (e: MouseEvent) => {
-      if (!switcher.contains(e.target as Node)) closeMenu()
-    }
-    const onFocusOut = (e: FocusEvent) => {
-      const next = e.relatedTarget as Node | null
-      if (!next || !switcher.contains(next)) closeMenu()
-    }
-
-    button.addEventListener("click", onButtonClick)
-    button.addEventListener("keydown", onButtonKey)
-    menu.addEventListener("keydown", onMenuKey)
-    for (const opt of options) opt.addEventListener("click", onOptionClick)
-    document.addEventListener("click", onDocClick)
-    switcher.addEventListener("focusout", onFocusOut)
+    select.addEventListener("change", onChange)
 
     window.addCleanup(() => {
-      button.removeEventListener("click", onButtonClick)
-      button.removeEventListener("keydown", onButtonKey)
-      menu.removeEventListener("keydown", onMenuKey)
-      for (const opt of options) opt.removeEventListener("click", onOptionClick)
-      document.removeEventListener("click", onDocClick)
-      switcher.removeEventListener("focusout", onFocusOut)
+      select.removeEventListener("change", onChange)
     })
   }
 })
