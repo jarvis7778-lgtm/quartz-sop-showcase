@@ -36,6 +36,19 @@ describe("release contracts", () => {
     assert.match(script, /new CustomEvent\("themechange"/)
   })
 
+  test("theme switcher stays in its own bounded sidebar row", () => {
+    const layout = read("quartz.layout.ts")
+    const switcherStyles = read("quartz/components/styles/themeswitcher.scss")
+    const shellStyles = read("quartz/styles/custom.scss")
+    assert.doesNotMatch(layout, /\{ Component: Component\.ThemeSwitcher\(\) \}/)
+    assert.match(layout, /\}\),\s+Component\.ThemeSwitcher\(\),\s+Component\.Explorer/g)
+    assert.match(switcherStyles, /\.theme-switcher \{[\s\S]*width: 100%;[\s\S]*min-width: 0;/)
+    assert.match(
+      shellStyles,
+      /> \.theme-switcher \{[\s\S]*grid-column: 1 \/ -1;[\s\S]*grid-row: 2;/,
+    )
+  })
+
   test("feature validation rejects database features without a client bootstrap", () => {
     assert.throws(
       () =>

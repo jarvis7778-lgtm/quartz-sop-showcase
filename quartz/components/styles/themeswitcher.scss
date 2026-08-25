@@ -1,7 +1,10 @@
 .theme-switcher {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+  width: 100%;
+  min-width: 0;
   flex-shrink: 0;
   padding: 0.2rem 0.35rem;
   color: var(--darkgray);
@@ -30,7 +33,10 @@
   }
 
   & .theme-switcher-select {
-    width: 8.5rem;
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
     padding: 0.15rem 1.35rem 0.15rem 0.2rem;
     color: var(--darkgray);
@@ -59,7 +65,7 @@
     }
 
     & .theme-switcher-select {
-      width: 5.5rem;
+      width: auto;
     }
   }
 }
