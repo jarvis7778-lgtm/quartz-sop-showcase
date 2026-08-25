@@ -686,6 +686,15 @@ body[data-slug="index"] {
   h3 {
     margin: 0 !important;
     font-size: 1.25rem !important;
+
+    small {
+      display: block;
+      margin-top: 0.35rem;
+      color: var(--gray);
+      font-family: var(--codeFont);
+      font-size: 0.62rem;
+      font-weight: 600;
+    }
   }
 
   p {

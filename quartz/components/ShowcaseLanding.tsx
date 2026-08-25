@@ -1,66 +1,112 @@
-import { QuartzComponent, QuartzComponentProps } from "./types"
 import { themeRegistry } from "../../themes"
+import { FullSlug, resolveRelative } from "../util/path"
+import { QuartzComponent, QuartzComponentProps } from "./types"
 
-const workflowCards = [
+const chapters = [
   {
     index: "01",
-    title: "新成员入职",
-    description: "把第一周需要完成的账号、环境与协作约定整理成可勾选清单。",
-    href: "/sop/example-onboarding",
-    meta: "8 个步骤 · 约 12 分钟",
+    title: "从零认识单片机",
+    description: "认识 Arduino UNO、搭建 IDE，并用 Blink 完成第一次烧录。",
+    slug: "tutorial/ch01-mcu-intro",
+    meta: "入门 · LED 与按键",
   },
   {
     index: "02",
-    title: "文档审核",
-    description: "用统一的提交、复核、批准和发布门槛减少口头确认与遗漏。",
-    href: "/sop/example-document-review",
-    meta: "4 个阶段 · 双人复核",
+    title: "Arduino 编程基础",
+    description: "掌握数字与模拟 IO、串口调试、传感器读取和常用 C++ 语法。",
+    slug: "tutorial/ch02-arduino-programming",
+    meta: "基础 · 4 个实操项目",
   },
   {
     index: "03",
-    title: "共享资源使用",
-    description: "把预约、交接、异常记录与归还检查放进一条清晰的操作路径。",
-    href: "/sop/example-shared-resource",
-    meta: "5 个步骤 · 带检查表",
+    title: "ESP32 进阶开发",
+    description: "把 Wi-Fi、BLE、Web Server 和 OTA 升级装进一块开发板。",
+    slug: "tutorial/ch03-esp32-advanced",
+    meta: "联网 · ESP32-S3",
+  },
+  {
+    index: "04",
+    title: "UART 串口通信",
+    description: "从帧格式和波特率出发，完成 GPS 读取与双板数据互传。",
+    slug: "tutorial/ch04-uart-serial",
+    meta: "通信 · GPS 与双板",
+  },
+  {
+    index: "05",
+    title: "RS485 与 Modbus",
+    description: "理解工业总线接线、方向控制、CRC 与主从设备通信。",
+    slug: "tutorial/ch05-rs485-modbus",
+    meta: "工业 · 电能表读取",
+  },
+  {
+    index: "06",
+    title: "MQTT 与物联网",
+    description: "设计 Topic 和 JSON 消息，让 ESP32 安全地收发远程指令。",
+    slug: "tutorial/ch06-mqtt-iot",
+    meta: "物联网 · EMQX / MQTTX",
+  },
+  {
+    index: "07",
+    title: "Home Assistant",
+    description: "用 ESPHome、MQTT 与自动化规则搭建自己的智能家居中枢。",
+    slug: "tutorial/ch07-home-assistant",
+    meta: "应用 · 自动化联动",
+  },
+  {
+    index: "08",
+    title: "传感器与执行器",
+    description: "组合环境站、自动窗帘与安防系统，完成端到端项目。",
+    slug: "tutorial/ch08-sensor-actuator-projects",
+    meta: "实战 · 3 个综合项目",
+  },
+  {
+    index: "09",
+    title: "TinyML 边缘 AI",
+    description: "把手势、图像与语音模型压缩后部署到 ESP32-S3。",
+    slug: "tutorial/ch09-tinyml-edge-ai",
+    meta: "AI · TFLite Micro",
+  },
+  {
+    index: "10",
+    title: "AI 语音控制硬件",
+    description: "串起唤醒词、小智 AI、Home Assistant 与 Ollama 本地模型。",
+    slug: "tutorial/ch10-ai-voice-hardware",
+    meta: "进阶 · 语音到执行器",
   },
 ]
 
-const capabilities = [
-  ["Markdown 原生", "直接使用 Markdown 或 Obsidian 写作，内容与网站代码保持解耦。"],
-  ["一次静态构建", "无需数据库即可获得搜索、目录、反向链接、RSS 与站点地图。"],
-  ["八套视觉语言", "主题不是简单换色，而是改变文档、任务、终端与笔记本的界面隐喻。"],
-  ["自动发布", "提交内容后由持续集成完成检查、构建与上线，发布过程可追踪。"],
+const learningStages = [
+  ["基础", "第 1–3 章", "单片机、Arduino 与 ESP32，先建立能独立烧录和调试的开发闭环。"],
+  ["通信", "第 4–6 章", "从 UART、RS485 到 MQTT，让设备从单机走向可靠连接。"],
+  ["应用", "第 7–8 章", "接入 Home Assistant，把传感器、执行器和自动化组合成系统。"],
+  ["AI", "第 9–10 章", "把 TinyML、语音与本地大模型带到真实硬件端。"],
 ]
 
-const ShowcaseLanding: QuartzComponent = (_props: QuartzComponentProps) => {
+const ShowcaseLanding: QuartzComponent = ({ fileData }: QuartzComponentProps) => {
   const repositoryUrl =
     process.env.TEMPLATE_REPOSITORY_URL ?? "https://github.com/jarvis7778-lgtm/quartz-sop-template"
+  const homeUrl = resolveRelative(fileData.slug!, "index" as FullSlug)
+  const tutorialUrl = resolveRelative(fileData.slug!, "tutorial/index" as FullSlug)
 
   return (
-    <article class="showcase-home" aria-label="Cfour SOP Gallery 首页">
+    <article class="showcase-home" aria-label="硬件与 AI 实战教程首页">
       <header class="showcase-nav">
-        <a class="showcase-brand" href="/" aria-label="Cfour SOP Gallery 首页">
+        <a class="showcase-brand" href={homeUrl} aria-label="硬件与 AI 实战教程首页">
           <span class="showcase-brand-mark" aria-hidden="true">
-            C4
+            H×A
           </span>
           <span>
-            <strong>Cfour SOP</strong>
-            <small>Gallery</small>
+            <strong>Hardware × AI</strong>
+            <small>Hands-on Tutorial</small>
           </span>
         </a>
         <nav aria-label="首页导航">
+          <a href="#roadmap">路径</a>
+          <a href="#chapters">章节</a>
           <a href="#themes">主题</a>
-          <a href="#workflows">示例</a>
-          <a href="#publish">发布</a>
-          {repositoryUrl ? (
-            <a class="showcase-nav-cta" href={repositoryUrl} target="_blank" rel="noreferrer">
-              GitHub 模板 ↗
-            </a>
-          ) : (
-            <a class="showcase-nav-cta" href="#github-template">
-              GitHub 模板
-            </a>
-          )}
+          <a class="showcase-nav-cta" href={tutorialUrl}>
+            开始学习 →
+          </a>
         </nav>
       </header>
 
@@ -69,92 +115,145 @@ const ShowcaseLanding: QuartzComponent = (_props: QuartzComponentProps) => {
           <div class="showcase-hero-copy">
             <p class="showcase-eyebrow">
               <span aria-hidden="true" />
-              为真实流程而做的静态知识站
+              零基础 · 十章 · 项目驱动
             </p>
             <h1 id="showcase-title">
-              把流程写成
-              <em>任何人都能执行</em>
-              的页面。
+              从一颗单片机，走到
+              <em>能听懂你的 AI 硬件。</em>
             </h1>
             <p class="showcase-lede">
-              一个基于 Quartz 的 SOP 展示馆。用 Markdown 管理内容，用八套完整主题表达不同团队气质，
-              再把同一份知识可靠地发布到任何静态托管平台。
+              一套从 Arduino、ESP32 和串口通信出发，逐步进入智能家居、TinyML
+              与本地语音助手的中文实战教程。少一点抽象铺垫，多一次真实接线、烧录和验证。
             </p>
             <div class="showcase-actions">
-              <a class="showcase-button primary" href="/sop/">
-                浏览 SOP 示例 <span aria-hidden="true">→</span>
+              <a class="showcase-button primary" href={tutorialUrl}>
+                打开完整教程 <span aria-hidden="true">→</span>
               </a>
-              <a class="showcase-button secondary" href="#themes">
-                体验八套主题
+              <a class="showcase-button secondary" href="#chapters">
+                查看十章内容
               </a>
             </div>
-            <dl class="showcase-stats" aria-label="项目摘要">
+            <dl class="showcase-stats" aria-label="教程摘要">
               <div>
-                <dt>8</dt>
-                <dd>完整主题</dd>
+                <dt>10</dt>
+                <dd>核心章节</dd>
+              </div>
+              <div>
+                <dt>4</dt>
+                <dd>学习阶段</dd>
               </div>
               <div>
                 <dt>0</dt>
-                <dd>数据库依赖</dd>
-              </div>
-              <div>
-                <dt>1</dt>
-                <dd>份内容源</dd>
+                <dd>前置经验</dd>
               </div>
             </dl>
           </div>
 
-          <div class="showcase-product" aria-label="SOP 页面界面示意">
+          <div class="showcase-product" aria-label="ESP32 与 AI 硬件实验界面示意">
             <div class="showcase-window-bar">
               <span aria-hidden="true" />
               <span aria-hidden="true" />
               <span aria-hidden="true" />
-              <p>docs / onboarding / first-week.md</p>
+              <p>lab / esp32 / voice-control.ino</p>
             </div>
             <div class="showcase-window-body">
               <aside>
-                <p class="showcase-window-label">WORKSPACE</p>
-                <strong>Team Handbook</strong>
+                <p class="showcase-window-label">LEARNING PATH</p>
+                <strong>Hardware AI Lab</strong>
                 <ul>
-                  <li class="active">入职流程</li>
-                  <li>研发规范</li>
-                  <li>发布检查</li>
-                  <li>共享资源</li>
+                  <li class="active">ESP32-S3</li>
+                  <li>UART / RS485</li>
+                  <li>MQTT / HA</li>
+                  <li>TinyML / Voice</li>
                 </ul>
               </aside>
               <div class="showcase-document">
-                <div class="showcase-doc-kicker">ONBOARDING · UPDATED TODAY</div>
-                <h2>新成员第一周</h2>
-                <p>完成下面的步骤后，你就具备独立参与协作的全部条件。</p>
+                <div class="showcase-doc-kicker">SERIAL MONITOR · 115200 BAUD</div>
+                <h2>语音控制实验</h2>
+                <p>从唤醒词到继电器动作，每一段链路都能单独验证。</p>
                 <ol>
                   <li class="done">
                     <span aria-hidden="true">✓</span>
                     <div>
-                      <strong>确认账号与访问范围</strong>
-                      <small>只申请当前角色真正需要的权限</small>
+                      <strong>ESP32-S3 已连接</strong>
+                      <small>Wi-Fi RSSI −48 dBm</small>
                     </div>
                   </li>
                   <li class="done">
                     <span aria-hidden="true">✓</span>
                     <div>
-                      <strong>运行本地环境检查</strong>
-                      <small>记录版本与验证结果</small>
+                      <strong>唤醒词已识别</strong>
+                      <small>edge inference 34 ms</small>
                     </div>
                   </li>
                   <li>
                     <span aria-hidden="true">3</span>
                     <div>
-                      <strong>完成第一次小提交</strong>
-                      <small>由协作伙伴进行复核</small>
+                      <strong>等待设备回执</strong>
+                      <small>lab/light/set → ON</small>
                     </div>
                   </li>
                 </ol>
                 <div class="showcase-doc-note">
                   <span aria-hidden="true">↳</span>
-                  每一步都有负责人、完成条件与下一步动作。
+                  每章都包含接线、代码、预期结果与排错路径。
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section
+          class="showcase-section showcase-capabilities"
+          id="roadmap"
+          aria-labelledby="roadmap-title"
+        >
+          <div class="showcase-section-heading">
+            <div>
+              <p>LEARNING ROADMAP</p>
+              <h2 id="roadmap-title">从点亮 LED 到本地 AI 助手</h2>
+            </div>
+            <p>四个阶段层层复用前一阶段的硬件与通信能力，避免只会复制代码却无法定位故障。</p>
+          </div>
+          <div class="showcase-capability-list">
+            {learningStages.map(([title, chapterRange, description], index) => (
+              <article>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <h3>
+                  {title}
+                  <small>{chapterRange}</small>
+                </h3>
+                <p>{description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section class="showcase-section" id="chapters" aria-labelledby="chapters-title">
+          <div class="showcase-section-heading">
+            <div>
+              <p>10 PRACTICAL CHAPTERS</p>
+              <h2 id="chapters-title">按真实系统的生长顺序学习</h2>
+            </div>
+            <p>章节正文来自你的 LLM Wiki 教程副本；网站发布不会反向修改原始 Obsidian 内容。</p>
+          </div>
+          <div class="showcase-workflow-grid">
+            {chapters.map((chapter) => (
+              <a
+                class="showcase-workflow-card"
+                href={resolveRelative(fileData.slug!, chapter.slug as FullSlug)}
+              >
+                <span class="showcase-workflow-index">{chapter.index}</span>
+                <div>
+                  <h3>{chapter.title}</h3>
+                  <p>{chapter.description}</p>
+                </div>
+                <footer>
+                  <small>{chapter.meta}</small>
+                  <span aria-hidden="true">↗</span>
+                </footer>
+              </a>
+            ))}
           </div>
         </section>
 
@@ -165,10 +264,10 @@ const ShowcaseLanding: QuartzComponent = (_props: QuartzComponentProps) => {
         >
           <div class="showcase-section-heading">
             <div>
-              <p>THEME LAB</p>
-              <h2 id="themes-title">同一份内容，八种表达方式</h2>
+              <p>READING THEMES</p>
+              <h2 id="themes-title">长教程，也可以按喜欢的方式阅读</h2>
             </div>
-            <p>点击任意主题即可立即切换整个站点。选择会保留到下一次访问，不需要重新构建。</p>
+            <p>点击任意主题即可切换整个教程。选择会跨页面保留，不需要重新构建。</p>
           </div>
           <div class="showcase-theme-grid">
             {themeRegistry.map((manifest, index) => {
@@ -196,95 +295,49 @@ const ShowcaseLanding: QuartzComponent = (_props: QuartzComponentProps) => {
           </div>
         </section>
 
-        <section class="showcase-section" id="workflows" aria-labelledby="workflows-title">
-          <div class="showcase-section-heading">
-            <div>
-              <p>REAL WORKFLOWS</p>
-              <h2 id="workflows-title">先从能直接照做的示例开始</h2>
-            </div>
-            <p>示例内容全部脱敏，并刻意保留负责人、完成条件、异常路径和交付物。</p>
-          </div>
-          <div class="showcase-workflow-grid">
-            {workflowCards.map((card) => (
-              <a class="showcase-workflow-card" href={card.href}>
-                <span class="showcase-workflow-index">{card.index}</span>
-                <div>
-                  <h3>{card.title}</h3>
-                  <p>{card.description}</p>
-                </div>
-                <footer>
-                  <small>{card.meta}</small>
-                  <span aria-hidden="true">↗</span>
-                </footer>
-              </a>
-            ))}
-          </div>
-        </section>
-
-        <section
-          class="showcase-section showcase-capabilities"
-          aria-labelledby="capabilities-title"
-        >
-          <div class="showcase-section-heading compact">
-            <div>
-              <p>BUILT FOR HANDOFF</p>
-              <h2 id="capabilities-title">内容简单，基础设施可靠</h2>
-            </div>
-          </div>
-          <div class="showcase-capability-list">
-            {capabilities.map(([title, description], index) => (
-              <article>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <h3>{title}</h3>
-                <p>{description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
         <section class="showcase-publish" id="publish" aria-labelledby="publish-title">
           <div class="showcase-publish-copy">
-            <p>SHIP THE KNOWLEDGE</p>
-            <h2 id="publish-title">从 Markdown 到线上站点，只保留一条清晰路径。</h2>
+            <p>BUILD · WIRE · VERIFY</p>
+            <h2 id="publish-title">学完不是“看完”，而是让硬件真的回应你。</h2>
             <ol>
               <li>
                 <span>01</span>
                 <div>
-                  <strong>Write</strong>
-                  <small>在 content/ 中编写或同步 Markdown</small>
+                  <strong>Build</strong>
+                  <small>先让最小代码在目标开发板上编译和运行</small>
                 </div>
               </li>
               <li>
                 <span>02</span>
                 <div>
-                  <strong>Review</strong>
-                  <small>检查内容、链接、格式与隐私边界</small>
+                  <strong>Wire</strong>
+                  <small>逐条核对电压、引脚、共地与总线终端</small>
                 </div>
               </li>
               <li>
                 <span>03</span>
                 <div>
-                  <strong>Publish</strong>
-                  <small>自动生成纯静态文件并部署</small>
+                  <strong>Verify</strong>
+                  <small>用串口日志和设备回执确认完整数据链路</small>
                 </div>
               </li>
             </ol>
           </div>
-          <div class="showcase-terminal" aria-label="构建命令示例">
+          <div class="showcase-terminal" aria-label="硬件调试终端示意">
             <div>
               <span />
               <span />
               <span />
-              <small>release.sh</small>
+              <small>serial-monitor</small>
             </div>
             <pre>
               <code>
-                <i>$</i> npm run check{"\n"}
-                <b>✓</b> types and formatting{"\n"}
-                <i>$</i> npm test{"\n"}
-                <b>✓</b> 102 tests passed{"\n"}
-                <i>$</i> npm run build{"\n"}
-                <b>✓</b> static site ready
+                <i>$</i> connect esp32-s3 --baud 115200{"\n"}
+                <b>✓</b> serial ready{"\n"}
+                <i>$</i> publish lab/temperature 24.6{"\n"}
+                <b>✓</b> mqtt round-trip 38 ms{"\n"}
+                <i>$</i> run wake-word{"\n"}
+                <b>✓</b> edge inference accepted
               </code>
             </pre>
           </div>
@@ -292,19 +345,13 @@ const ShowcaseLanding: QuartzComponent = (_props: QuartzComponentProps) => {
 
         <section class="showcase-github" id="github-template" aria-labelledby="github-title">
           <div>
-            <p>OPEN TEMPLATE</p>
-            <h2 id="github-title">展示站之外，还有一份干净、可复制的 GitHub 模板。</h2>
-            <span>
-              展示站负责品牌与体验；模板仓库只保留通用能力、示例内容、文档和自动化发布流程。
-            </span>
+            <p>BUILD YOUR OWN</p>
+            <h2 id="github-title">教程内容独立展示，建站能力做成可复制模板。</h2>
+            <span>展示仓库承载这套硬件教程；公开模板保留主题、搜索和自动发布能力。</span>
           </div>
-          {repositoryUrl ? (
-            <a href={repositoryUrl} target="_blank" rel="noreferrer">
-              打开 GitHub 模板 <span aria-hidden="true">↗</span>
-            </a>
-          ) : (
-            <span class="showcase-repo-pending">公开仓库正在连接</span>
-          )}
+          <a href={repositoryUrl} target="_blank" rel="noreferrer">
+            打开 GitHub 模板 <span aria-hidden="true">↗</span>
+          </a>
         </section>
       </main>
     </article>

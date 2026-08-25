@@ -40,7 +40,7 @@ export default (() => {
       (e) => e.name === CustomOgImagesEmitterName,
     )
     const ogImageDefaultPath = cfg.baseUrl
-      ? `https://${cfg.baseUrl}/static/og-showcase.png`
+      ? `https://${cfg.baseUrl}/static/og-image.png`
       : undefined
     const activeManifest = getThemeManifest(cfg.themePreset ?? "")
     const activeGoogleFontHref =
@@ -84,7 +84,7 @@ export default (() => {
             <meta name="twitter:image" content={ogImageDefaultPath} />
             <meta
               property="og:image:type"
-              content={`image/${getFileExtension(ogImageDefaultPath) ?? "png"}`}
+              content={`image/${getFileExtension(ogImageDefaultPath)?.replace(/^\./, "") ?? "png"}`}
             />
           </>
         )}

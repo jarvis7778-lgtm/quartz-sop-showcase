@@ -33,7 +33,7 @@ const contentRightComponents = [
 const templateRepositoryUrl =
   process.env.TEMPLATE_REPOSITORY_URL ?? "https://github.com/jarvis7778-lgtm/quartz-sop-template"
 const footerLinks: Record<string, string> = {
-  "SOP 示例库": "/sop/",
+  教程首页: "https://jarvis7778-lgtm.github.io/quartz-sop-showcase/tutorial/",
   ...(templateRepositoryUrl ? { "GitHub 模板": templateRepositoryUrl } : {}),
 }
 
