@@ -10,12 +10,13 @@
   "scripts": {
     "quartz": "./quartz/bootstrap-cli.mjs",
     "dev": "node ./quartz/bootstrap-cli.mjs build --serve --port 8081",
-    "build": "node scripts/build-sites.mjs",
     "docs": "npx quartz build --serve -d docs",
     "check": "tsc --noEmit && npx prettier . --check",
     "format": "prettier . --write",
     "test": "tsx --test",
     "test:db": "bash scripts/verify-postgres-migrations.sh",
+    "test:collab-security": "bash scripts/test-collab-security-postgres.sh",
+    "test:browser": "SITE_MODE=static npx quartz build && playwright test",
     "build:showcase": "node scripts/build-showcase.mjs",
     "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1"
   },
@@ -91,11 +92,11 @@
     "rfdc": "^1.4.1",
     "satori": "^0.18.3",
     "serve-handler": "^6.1.7",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.5",
     "shiki": "^1.26.2",
     "source-map-support": "^0.5.21",
     "to-vfile": "^8.0.0",
-    "toml": "^3.0.0",
+    "toml": "^5.0.0",
     "unified": "^11.0.5",
     "unist-util-visit": "^5.0.0",
     "vfile": "^6.0.3",
@@ -103,7 +104,11 @@
     "ws": "^8.21.1",
     "yargs": "^18.0.0"
   },
+  "overrides": {
+    "katex": "0.18.2"
+  },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",

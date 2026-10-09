@@ -1,4 +1,4 @@
-import { isValidPreset, THEME_PRESET_STORAGE_KEY } from "../../../themes/switcher"
+import { isValidPreset, THEME_PRESET_STORAGE_KEY } from "../../themes/switcher"
 
 function applyShowcasePreset(preset: string) {
   if (!isValidPreset(preset)) return

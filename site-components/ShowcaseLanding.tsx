@@ -1,6 +1,6 @@
-import { themeRegistry } from "../../themes"
-import { FullSlug, resolveRelative } from "../util/path"
-import { QuartzComponent, QuartzComponentProps } from "./types"
+import { themeRegistry } from "../themes"
+import { FullSlug, resolveRelative } from "../quartz/util/path"
+import { QuartzComponent, QuartzComponentProps } from "../quartz/components/types"
 
 const chapters = [
   {

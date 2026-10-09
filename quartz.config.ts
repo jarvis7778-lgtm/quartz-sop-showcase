@@ -1,5 +1,6 @@
 import { QuartzConfig } from "./quartz/cfg"
 import * as Plugin from "./quartz/plugins"
+import ShowcaseContent from "./site-components/Content"
 import { siteTheme } from "./site.theme"
 import { createThemePreset } from "./themes"
 
@@ -48,7 +49,7 @@ const config: QuartzConfig = {
     emitters: [
       Plugin.AliasRedirects(),
       Plugin.ComponentResources(),
-      Plugin.ContentPage(),
+      Plugin.ContentPage({ pageBody: ShowcaseContent() }),
       Plugin.FolderPage(),
       Plugin.TagPage(),
       Plugin.ContentIndex({

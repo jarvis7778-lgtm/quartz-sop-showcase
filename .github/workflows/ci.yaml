@@ -41,6 +41,22 @@ jobs:
           SUPABASE_ANON_KEY: ${{ matrix.site-mode == 'collab' && 'public-anon-placeholder' || '' }}
         run: npx quartz build
 
+  showcase-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: SITE_MODE=static npx quartz build -o preview/updated
+      - run: node site-tests/preview-smoke.mjs
+        env:
+          PLAYWRIGHT_CHANNEL: chromium
+      - run: node scripts/build-sites.mjs
+
   database-migrations:
     runs-on: ubuntu-latest
     steps:
