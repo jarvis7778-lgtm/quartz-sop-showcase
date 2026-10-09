@@ -15,6 +15,21 @@ try {
     page.on("pageerror", (e) => errors.push(e.message))
     await page.goto(base, { waitUntil: "networkidle" })
     assert.ok((await page.locator("h1").innerText()).includes("硬件"))
+    if (width === 390) {
+      // Mobile browser chrome collapses during scrolling, resizing the viewport.
+      await page.evaluate(() => window.scrollTo(0, 400))
+      await page.setViewportSize({ width, height: 760 })
+      await page.waitForTimeout(400)
+      assert.equal(
+        await page.locator("#quartz-body").evaluate((el) => el.classList.contains("lock-scroll")),
+        false,
+      )
+      assert.equal(
+        await page.evaluate(() => document.documentElement.classList.contains("mobile-no-scroll")),
+        false,
+      )
+      assert.ok(await page.locator(".center").evaluate((el) => el.getBoundingClientRect().left < 1))
+    }
     for (const theme of ["notion", "carbon", "nocturne", "fieldnotes"]) {
       await page.locator(`[data-showcase-theme="${theme}"]`).click()
       assert.equal(await page.evaluate(() => document.body.dataset.themePreset), theme)
