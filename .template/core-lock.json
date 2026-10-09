@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "source": "/home/lyy/code/quartz-sop-template",
-  "version": "v0.1.0",
-  "commit": "9279e3884757a2a42ed4fb740456362003fed872",
+  "source": "/home/runner/work/_temp/template-source",
+  "version": "v0.1.1",
+  "commit": "416ebac4bc662af66fee6364a91be66a9b873d3e",
   "files": {
     "quartz/bootstrap-cli.mjs": {
       "sha256": "f4ed5151cf3737666ddfc214f1cd189ce24922194a66c7b1bb4838ca7b8dba81"
