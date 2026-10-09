@@ -1,0 +1,71 @@
+.theme-switcher {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
+  padding: 0.2rem 0.35rem;
+  color: var(--darkgray);
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 5px;
+  transition:
+    color 0.1s ease,
+    border-color 0.1s ease;
+
+  &:hover,
+  &:focus-within {
+    color: var(--secondary);
+    border-color: var(--secondary);
+  }
+
+  & .theme-switcher-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  & .theme-switcher-label {
+    white-space: nowrap;
+    font-size: 0.8rem;
+  }
+
+  & .theme-switcher-select {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    padding: 0.15rem 1.35rem 0.15rem 0.2rem;
+    color: var(--darkgray);
+    background-color: var(--light);
+    border: none;
+    font-family: var(--bodyFont);
+    font-size: 0.8rem;
+    line-height: 1.25;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+}
+
+// Keep enough room to identify the selected theme without crowding Quartz's
+// mobile header.
+@media all and (max-width: 800px) {
+  .theme-switcher {
+    height: 2.75rem;
+    padding-inline: 0.4rem;
+
+    & .theme-switcher-label {
+      display: none;
+    }
+
+    & .theme-switcher-select {
+      width: auto;
+    }
+  }
+}

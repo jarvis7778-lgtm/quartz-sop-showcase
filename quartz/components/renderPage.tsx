@@ -27,13 +27,10 @@ export function pageResources(
   baseDir: FullSlug | RelativeURL,
   staticResources: StaticResources,
 ): StaticResources {
-  // GitHub Pages caches static assets for ten minutes. Version the files that
-  // change with every deployment so a new HTML document cannot run an older
-  // theme switcher or explorer index from the browser cache.
   const assetVersion = encodeURIComponent(process.env.GITHUB_SHA?.slice(0, 12) ?? "dev")
-  const versioned = (path: string) => `${path}?v=${assetVersion}`
-  const contentIndexPath = joinSegments(baseDir, "static/contentIndex.json")
-  const contentIndexScript = `const fetchData = fetch("${versioned(contentIndexPath)}").then(data => data.json())`
+  const versioned = (file: string) => `${file}?v=${assetVersion}`
+  const contentIndexPath = versioned(joinSegments(baseDir, "static/contentIndex.json"))
+  const contentIndexScript = `const fetchData = fetch("${contentIndexPath}").then(data => data.json())`
 
   const resources: StaticResources = {
     css: [
@@ -56,7 +53,7 @@ export function pageResources(
       },
       ...staticResources.js,
     ],
-    additionalHead: staticResources.additionalHead,
+    additionalHead: [...staticResources.additionalHead],
   }
 
   resources.js.push({

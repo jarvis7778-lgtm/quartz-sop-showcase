@@ -1,5 +1,6 @@
 import { PageLayout, SharedLayout } from "./quartz/cfg"
 import * as Component from "./quartz/components"
+import ShowcaseThemeSwitcher from "./site-components/ThemeSwitcher"
 import { isFeatureEnabled } from "./site.features"
 
 const explorerFilter = (node: { slug: string; slugSegment: string }) =>
@@ -80,7 +81,7 @@ export const defaultContentPageLayout: PageLayout = {
         { Component: Component.ReaderMode() },
       ],
     }),
-    Component.ThemeSwitcher(),
+    ShowcaseThemeSwitcher(),
     Component.Explorer({ folderClickBehavior: "collapse", filterFn: explorerFilter }),
   ],
   right: contentRightComponents,
@@ -101,7 +102,7 @@ export const defaultListPageLayout: PageLayout = {
         { Component: Component.Darkmode() },
       ],
     }),
-    Component.ThemeSwitcher(),
+    ShowcaseThemeSwitcher(),
     Component.Explorer({ folderClickBehavior: "collapse", filterFn: explorerFilter }),
   ],
   right: [],
